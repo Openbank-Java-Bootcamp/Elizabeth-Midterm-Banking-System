@@ -1,5 +1,7 @@
 package com.ironhack.banking_system.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.util.Currency;

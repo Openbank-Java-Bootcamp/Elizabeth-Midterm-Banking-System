@@ -2,7 +2,7 @@ package com.ironhack.banking_system.model;
 
 import com.ironhack.banking_system.enums.AccountStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,25 +11,40 @@ import java.util.Date;
 import static java.util.Currency.*;
 
 @Entity
-@Table(name = "checking")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class Checking extends Account{
 
+    @NotEmpty
     @Column(name = "secret_key")
     private String secretKey;
 
-    @Column(name = "minimum_balance")
-    private Money minimumBalance = new Money(new BigDecimal("250"), getInstance("USD"));
+    @Column(name = "minimum_balance") //final as this does not change
+    private final Money minimumBalance = new Money(new BigDecimal("250"), getInstance("USD"));
 
-    @Column(name = "monthly_maintenance_fee")
-    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
+    @Column(name = "monthly_maintenance_fee") //final as this does not change
+    private final Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
 
     @Column(name = "creation_date")
-    private Date creationDate;
+    private final Date creationDate = new Date(); // will automatically assign today's date
 
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
+
+    //constructor for 1 owner
+
+
+    public Checking(AccountHolder primaryOwner, String secretKey) {
+        super(primaryOwner);
+        this.secretKey = secretKey;
+        this.status = AccountStatus.ACTIVE;
+    }
+
+    //constructor for 2 owners
+    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
+        super(primaryOwner, secondaryOwner);
+        this.secretKey = secretKey;
+        this.status = AccountStatus.ACTIVE;
+    }
 }
