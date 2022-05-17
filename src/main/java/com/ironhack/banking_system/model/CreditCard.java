@@ -74,4 +74,33 @@ public class CreditCard extends Account{
 //    }
 
 
+    //setter for interestRate and creditLimit
+    public void setInterestRate(BigDecimal interestRate) {
+        BigDecimal lowerLimit = new BigDecimal("0.1");
+        BigDecimal upperLimit = new BigDecimal("0.2");
+
+        if (interestRate.compareTo(lowerLimit) <= 0) {
+            this.interestRate = lowerLimit;
+        } else if (interestRate.compareTo(upperLimit) >= 1) {
+            this.interestRate = upperLimit;
+        } else {
+            this.interestRate = interestRate;
+        }
+    }
+
+    public void setCreditLimit(Money creditLimit) {
+        BigDecimal lowerLimit = new BigDecimal("100");
+        BigDecimal upperLimit = new BigDecimal("100000");
+        BigDecimal creditLimitAmount = creditLimit.getAmount();
+
+        if (creditLimitAmount.compareTo(lowerLimit) <= 0) {
+            this.creditLimit = new Money(lowerLimit);
+        } else if (creditLimitAmount.compareTo(upperLimit) >= 1) {
+            this.creditLimit = new Money(upperLimit);
+        } else {
+            this.creditLimit = creditLimit;
+        }
+    }
+
+
 }

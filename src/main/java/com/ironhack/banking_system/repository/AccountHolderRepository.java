@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountHolderRepository extends JpaRepository<AccountHolder, Long> {
+
+    AccountHolder findByUsername(String username);
+
 }

@@ -46,4 +46,5 @@ public class Name {
         this.lastName = lastName;
         this.salutation = salutation;
     }
+
 }

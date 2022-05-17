@@ -43,15 +43,15 @@ public class AccountHolder extends User{
     private List<Account> accounts;
 
 
-    public AccountHolder(Long id, Name name, String username, String password, Date dateOfBirth, Address primaryAddress, Address mailingAddress) {
-        super(id, name, username, password);
+    public AccountHolder(Name name, String username, String password, Date dateOfBirth, Address primaryAddress, Address mailingAddress) {
+        super(name, username, password);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
 
-    public AccountHolder(Long id, Name name, String username, String password, Date dateOfBirth, Address primaryAddress) {
-        super(id, name, username, password);
+    public AccountHolder(Name name, String username, String password, Date dateOfBirth, Address primaryAddress) {
+        super(name, username, password);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
     }
