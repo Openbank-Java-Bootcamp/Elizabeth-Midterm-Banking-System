@@ -13,10 +13,12 @@ import static java.util.Currency.*;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@DiscriminatorColumn(name = "account_type")
 public abstract class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private long id;
 
     @NotNull
@@ -28,7 +30,11 @@ public abstract class Account {
     @JoinColumn(name = "secondary_owner")
     private AccountHolder secondaryOwner;
 
-    @Column(name = "penalty_fee")
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency")),
+            @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount"))
+    })
     private final Money penaltyFee = new Money(new BigDecimal("40"), getInstance("USD"));
 
 

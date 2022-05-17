@@ -33,7 +33,7 @@ public class StudentChecking extends Checking{
     }
 
     //constructor for 2 owners
-    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
-        super(primaryOwner, secondaryOwner, secretKey);
-    }
+//    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
+//        super(primaryOwner, secondaryOwner, secretKey);
+//    }
 }

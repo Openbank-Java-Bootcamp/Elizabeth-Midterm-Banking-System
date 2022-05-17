@@ -19,15 +19,26 @@ public class Checking extends Account{
     @Column(name = "secret_key")
     private String secretKey;
 
-    @Column(name = "minimum_balance") //final as this does not change
+    @Embedded
+    //@Column(name = "minimum_balance") //final as this does not change
+    @AttributeOverrides({
+            @AttributeOverride(name = "currency", column = @Column(name = "minimum_balance_currency")),
+            @AttributeOverride(name = "amount", column = @Column(name = "minimum_balance_amount"))
+    })
     private final Money minimumBalance = new Money(new BigDecimal("250"), getInstance("USD"));
 
-    @Column(name = "monthly_maintenance_fee") //final as this does not change
+    @Embedded
+    //@Column(name = "monthly_maintenance_fee") //final as this does not change
+    @AttributeOverrides({
+            @AttributeOverride(name = "currency", column = @Column(name = "monthly_maintenance_fee_currency")),
+            @AttributeOverride(name = "amount", column = @Column(name = "monthly_maintenance_fee_amount"))
+    })
     private final Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
 
     @Column(name = "creation_date")
     private final Date creationDate = new Date(); // will automatically assign today's date
 
+    @Column
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
@@ -42,9 +53,9 @@ public class Checking extends Account{
     }
 
     //constructor for 2 owners
-    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
-        super(primaryOwner, secondaryOwner);
-        this.secretKey = secretKey;
-        this.status = AccountStatus.ACTIVE;
-    }
+//    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
+//        super(primaryOwner, secondaryOwner);
+//        this.secretKey = secretKey;
+//        this.status = AccountStatus.ACTIVE;
+//    }
 }
