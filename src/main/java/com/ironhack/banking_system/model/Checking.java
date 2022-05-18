@@ -35,9 +35,6 @@ public class Checking extends Account{
     })
     private final Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
 
-    @Column(name = "creation_date")
-    private final Date creationDate = new Date(); // will automatically assign today's date
-
     @Column
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
@@ -57,5 +54,33 @@ public class Checking extends Account{
         super(primaryOwner, secondaryOwner, balance);
         this.secretKey = secretKey;
         this.status = AccountStatus.ACTIVE;
+    }
+
+    //methods
+    public void applyPenaltyFeeIfApplicable() {
+        BigDecimal balanceAmount = super.getBalance().getAmount();
+        if (balanceAmount.compareTo(minimumBalance.getAmount()) < 0) {
+            BigDecimal penaltyFeeAmount = super.getPenaltyFee().getAmount();
+            super.setBalance(new Money(balanceAmount.subtract(penaltyFeeAmount)));
+        }
+    }
+
+    @Override //override as penalty fee added
+    public void debitAccount(Money debit) {
+        BigDecimal debitAmount = debit.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
+            throw new IllegalArgumentException("Insufficient Funds");
+        } else {
+            BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
+
+            BigDecimal minimumBalanceAmount = this.getMinimumBalance().getAmount();
+            if ((currentBalanceAmount.compareTo(minimumBalanceAmount) >= 0)
+                    && (newBalanceAmount.compareTo(minimumBalanceAmount) < 0)) {
+                BigDecimal penaltyFeeAmount = this.getPenaltyFee().getAmount();
+                newBalanceAmount = newBalanceAmount.subtract(penaltyFeeAmount);
+            }
+            this.setBalance(new Money(newBalanceAmount));
+        }
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 //@Table(name ="account_holder")
 public class AccountHolder extends User{
 
-    @NotNull
+   // @NotNull
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
@@ -47,17 +47,25 @@ public class AccountHolder extends User{
     private List<Account> accounts;
 
 
-    public AccountHolder(Name name, String username, String password, LocalDate dateOfBirth, Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(Name name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress, Address mailingAddress) {
         super(name, username, password);
-        this.dateOfBirth = dateOfBirth;
+        setDateOfBirth(birthYear, birthMonth, birthDate);
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
 
-    public AccountHolder(Name name, String username, String password, LocalDate dateOfBirth, Address primaryAddress) {
+    public AccountHolder(Name name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress) {
         super(name, username, password);
-        this.dateOfBirth = dateOfBirth;
+        setDateOfBirth(birthYear, birthMonth, birthDate);
         this.primaryAddress = primaryAddress;
+    }
+
+    //custom setter for dateOfBirth
+
+
+    public void setDateOfBirth(int birthYear, int birthMonth, int birthDate) {
+        LocalDate dobAsLocalDate = LocalDate.of(birthYear, birthMonth, birthDate);
+        this.dateOfBirth = dobAsLocalDate;
     }
 
     //method to calculate age

@@ -22,7 +22,7 @@ class SavingsTest {
                 "MJB1972",
                 "catlady7",
                 //new Date(1972, 04,01),
-                LocalDate.of(1972, 04,01),
+                1972, 04,01,
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
@@ -84,4 +84,52 @@ class SavingsTest {
         savings1.applyPenaltyFeeIfApplicable();
         assertEquals(new BigDecimal("1005.00"), savings1.getBalance().getAmount());
     }
+
+    @Test
+    void applyInterestIfApplicable_DueForInterest_InterestApplied() {
+        savings1.setLastDateInterestApplied(LocalDate.of(2021, 04,15));
+        BigDecimal originalBalanceAmount = savings1.getBalance().getAmount();
+        BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.multiply(savings1.getInterestRate()));
+        savings1.applyInterestIfApplicable();
+
+        assertEquals(expectedAmount.setScale(2), savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void applyInterestIfApplicable_NotDueForInterest_BalanceUnchanged() {
+        BigDecimal originalBalanceAmount = savings1.getBalance().getAmount();
+        savings1.applyInterestIfApplicable();
+
+        assertEquals(originalBalanceAmount, savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void debitAccount_SufficientFunds_AccountDebited() {
+        BigDecimal expectedBalanceAmount = savings1.getBalance().getAmount().subtract(BigDecimal.valueOf(20));
+        savings1.debitAccount(new Money(BigDecimal.valueOf(20)));
+        assertEquals(expectedBalanceAmount, savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void debitAccount_SufficientFundsDropsBelowMinBalance_AccountDebitedAndPenaltyFeeApplied() {
+        BigDecimal expectedBalanceAmount = savings1.getBalance().getAmount().subtract(BigDecimal.valueOf(205+40)); //subtracting debit amount and penalty fee amount
+        savings1.debitAccount(new Money(BigDecimal.valueOf(205)));
+        assertEquals(expectedBalanceAmount, savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void debitAccount_SufficientFundsAlreadyBelowMinBalance_AccountDebitedButNoPenaltyFeeApplied() {
+        savings1.setBalance(new Money(BigDecimal.valueOf(800))); //setting balance below default 1000 minimumBalance
+        BigDecimal expectedBalanceAmount = savings1.getBalance().getAmount().subtract(BigDecimal.valueOf(20)); //expecting only debit amount to be taken
+        savings1.debitAccount(new Money(BigDecimal.valueOf(20)));
+        assertEquals(expectedBalanceAmount, savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void debitAccount_InsufficientFunds_Throws() {
+        BigDecimal debitAmount = BigDecimal.valueOf(1205);
+        assertThrows(IllegalArgumentException.class, ()->savings1.debitAccount(new Money(debitAmount)));
+    }
+
+
 }

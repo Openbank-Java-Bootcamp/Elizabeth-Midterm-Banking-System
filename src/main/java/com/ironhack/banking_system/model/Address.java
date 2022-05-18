@@ -20,14 +20,14 @@ public class Address {
     private String streetAddress;
 
     @NotEmpty
-    @Column(name = "postal_code")
-    private String postalCode; //string or long???
-
-    @NotEmpty
     private String city;
 
     @NotEmpty
     @Column
     private String country;
+
+    @NotEmpty
+    @Column(name = "postal_code")
+    private String postalCode; //string or long???
 
 }

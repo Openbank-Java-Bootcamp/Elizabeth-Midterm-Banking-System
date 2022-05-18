@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -22,7 +23,7 @@ class CreditCardTest {
                 "MJB1972",
                 "catlady7",
                 //new Date(1972, 04,01),
-                LocalDate.of(1972, 04,01),
+                1972, 04,01,
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
@@ -68,6 +69,26 @@ class CreditCardTest {
     void setCreditLimit_WithinLimit_Works() {
         creditCard1.setCreditLimit(new Money(new BigDecimal("5000")));
         assertEquals(new BigDecimal("5000.00"), creditCard1.getCreditLimit().getAmount());
+    }
+
+
+    @Test
+    void applyInterestIfApplicable_DueForInterest_InterestApplied() {
+        creditCard1.setLastDateInterestApplied(LocalDate.of(2022, 04,15));
+        BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
+        BigDecimal monthlyInterestRate = creditCard1.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
+        BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.multiply(monthlyInterestRate));
+        creditCard1.applyInterestIfApplicable();
+
+        assertEquals(expectedAmount.setScale(2), creditCard1.getBalance().getAmount());
+    }
+
+    @Test
+    void applyInterestIfApplicable_NotDueForInterest_NoInterestApplied() {
+        creditCard1.applyInterestIfApplicable();
+        BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
+
+        assertEquals(originalBalanceAmount, creditCard1.getBalance().getAmount());
     }
 
 }

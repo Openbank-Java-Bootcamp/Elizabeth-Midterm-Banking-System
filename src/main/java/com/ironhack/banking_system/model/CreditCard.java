@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.Period;
+
 import static java.util.Currency.*;
 
 @Data
@@ -23,6 +27,8 @@ public class CreditCard extends Account{
 
     @Column(name = "interest_rate")
     private BigDecimal interestRate = new BigDecimal(".2");
+
+    private LocalDate lastDateInterestApplied = LocalDate.now();//will set it to date of creation
 
 
     //constructor for default creditLimit and default interestRate, 1 account holder
@@ -102,5 +108,41 @@ public class CreditCard extends Account{
         }
     }
 
+
+    //methods
+    public void applyInterestIfApplicable() {
+        LocalDate currentDate = LocalDate.now();
+        int monthsSinceLastInterestApplied = Period.between(this.getLastDateInterestApplied(), currentDate).getMonths();
+        //if interest hasn't been applied in over a year
+        if (monthsSinceLastInterestApplied >= 1) {
+            BigDecimal balanceAmount = super.getBalance().getAmount(); //get current balance
+            BigDecimal monthlyInterestRate = this.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
+            BigDecimal interestAmount = balanceAmount.multiply(monthlyInterestRate); //calculate interest to be added
+            BigDecimal newBalanceAmount = balanceAmount.add(interestAmount); //calculate new balance
+            super.setBalance(new Money(newBalanceAmount));
+            lastDateInterestApplied = LocalDate.now();
+        }
+    }
+
+    @Override //need to override as balance on creditCard account is opposite other accounts
+    public void debitAccount(Money funds) {
+        BigDecimal debitAmount = funds.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        BigDecimal newBalanceAmount = currentBalanceAmount.add(debitAmount);
+        BigDecimal creditLimitAmount = this.getCreditLimit().getAmount();
+        if (newBalanceAmount.compareTo(creditLimitAmount) > 0) {
+            throw new IllegalArgumentException("Amount exceeds credit limit.");
+        } else {
+            this.setBalance(new Money(newBalanceAmount));
+        }
+    }
+
+    @Override //need to override as balance on creditCard account is opposite other accounts
+    public void creditAccount(Money funds) {
+        BigDecimal creditAmount = funds.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(creditAmount);
+        this.setBalance(new Money(newBalanceAmount));
+    }
 
 }

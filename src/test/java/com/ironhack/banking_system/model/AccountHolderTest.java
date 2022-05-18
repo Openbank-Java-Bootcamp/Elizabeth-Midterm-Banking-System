@@ -21,7 +21,7 @@ class AccountHolderTest {
                 new Name("Marjorie", "Stewart-Baxter"),
                 "MJB1972",
                 "catlady7",
-                LocalDate.of(1972, 04,01),
+                1972, 04,01,
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
         accountHolder2 = new AccountHolder(
@@ -29,7 +29,7 @@ class AccountHolderTest {
                         "ReggieD",
                         "DrRegger",
                         //new Date(1998, 12,31),
-                        LocalDate.of(1998, 12, 31),
+                        1998, 12, 31,
                         new Address("c/ Atocha 216", "28039", "Madrid", "Spain")
                 );
         accountHolder3 = new AccountHolder();
@@ -44,6 +44,11 @@ class AccountHolderTest {
     @Test
     void calculateAge_NullData_Throws() {
         assertThrows(NullPointerException.class, ()-> accountHolder3.calculateAge());
+    }
+
+    @Test
+    void setDateOfBirth_Works() {
+        assertEquals(LocalDate.of(1972, 04,01), accountHolder1.getDateOfBirth());
     }
 
 

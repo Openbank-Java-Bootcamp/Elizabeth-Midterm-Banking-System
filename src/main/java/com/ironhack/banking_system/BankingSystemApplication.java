@@ -44,8 +44,8 @@ public class BankingSystemApplication {
 							"MJB1972",
 							"catlady7",
 							//new Date(1972, 04,01),
-							LocalDate.of(1972, 04, 01),
-							new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
+							1972, 04, 01,
+							new Address("c/ Alameda 46", "Madrid", "Spain", "28012")
 							));
 			accountHolderService.saveAccountHolder(
 					new AccountHolder(
@@ -53,8 +53,8 @@ public class BankingSystemApplication {
 							"ReggieD",
 							"DrRegger",
 							//new Date(1998, 12,31),
-							LocalDate.of(1998, 12, 31),
-							new Address("c/ Atocha 216", "28039", "Madrid", "Spain")
+							1998, 12, 31,
+							new Address("c/ Atocha 216", "Toledo", "Spain", "26784")
 					));
 
 			roleService.addRoleToUser("CThomas", "ROLE_ADMIN");

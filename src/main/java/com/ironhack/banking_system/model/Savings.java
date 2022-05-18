@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 
 import static java.util.Currency.*;
@@ -30,9 +32,6 @@ public class Savings extends Account{
     })
     private Money minimumBalance = new Money(new BigDecimal("1000"), getInstance("USD"));
 
-    @Column(name = "creation_date")
-    private final Date creationDate = new Date(); // will automatically assign today's date
-
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
@@ -41,6 +40,8 @@ public class Savings extends Account{
     @Column(name = "interest_rate")
     private BigDecimal interestRate = new BigDecimal("0.0025");
 
+    private LocalDate lastDateInterestApplied;
+
 
 
     //constructor for default minimumBalance and default interestRate, 1 account holder
@@ -48,6 +49,7 @@ public class Savings extends Account{
         super(primaryOwner, balance);
         this.secretKey = secretKey;
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor for default minimumBalance and default interestRate, 2 account holders
@@ -55,6 +57,7 @@ public class Savings extends Account{
         super(primaryOwner, secondaryOwner, balance);
         this.secretKey = secretKey;
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor with default minimumBalance and custom interestRate, 1 account holder
@@ -63,6 +66,7 @@ public class Savings extends Account{
         this.secretKey = secretKey;
         setInterestRate(interestRate);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor with default minimumBalance and custom interestRate, 2 account holders
@@ -71,6 +75,7 @@ public class Savings extends Account{
         this.secretKey = secretKey;
         setInterestRate(interestRate);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor with custom minimumBalance and default interestRate, 1 account holder
@@ -79,6 +84,7 @@ public class Savings extends Account{
         this.secretKey = secretKey;
         setMinimumBalance(minimumBalance);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor with custom minimumBalance and default interestRate, 2 account holders
@@ -87,6 +93,7 @@ public class Savings extends Account{
         this.secretKey = secretKey;
         setMinimumBalance(minimumBalance);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
     //constructor with custom minimumBalance and interestRate, 1 account holder
@@ -96,6 +103,7 @@ public class Savings extends Account{
         setMinimumBalance(minimumBalance);
         setInterestRate(interestRate);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
 
@@ -106,6 +114,7 @@ public class Savings extends Account{
         setMinimumBalance(minimumBalance);
         setInterestRate(interestRate);
         this.status = AccountStatus.ACTIVE;
+        this.lastDateInterestApplied = LocalDate.now();
     }
 
 
@@ -140,22 +149,45 @@ public class Savings extends Account{
 
 
 
-    //methods for fees and interest
-    public void applyPenaltyFeeIfApplicable2(Money newBalance) {
-        BigDecimal newBalanceAmount = newBalance.getAmount();
-        if (newBalanceAmount.compareTo(minimumBalance.getAmount()) < 0) {
-            BigDecimal penaltyFeeAmount = super.getPenaltyFee().getAmount();
-            super.setBalance(new Money(newBalanceAmount.subtract(penaltyFeeAmount)));
-        } else {
-            super.setBalance(newBalance);
-        }
-    }
+    //methods
 
     public void applyPenaltyFeeIfApplicable() {
         BigDecimal balanceAmount = super.getBalance().getAmount();
         if (balanceAmount.compareTo(minimumBalance.getAmount()) < 0) {
             BigDecimal penaltyFeeAmount = super.getPenaltyFee().getAmount();
             super.setBalance(new Money(balanceAmount.subtract(penaltyFeeAmount)));
+        }
+    }
+
+    public void applyInterestIfApplicable() {
+        LocalDate currentDate = LocalDate.now();
+        int yearsSinceLastInterestApplied = Period.between(this.getLastDateInterestApplied(), currentDate).getYears();
+        //if interest hasn't been applied in over a year
+        if (yearsSinceLastInterestApplied >= 1) {
+            BigDecimal balanceAmount = super.getBalance().getAmount(); //get current balance
+            BigDecimal interestAmount = balanceAmount.multiply(interestRate); //calculate interest to be added
+            BigDecimal newBalanceAmount = balanceAmount.add(interestAmount); //calculate new balance
+            super.setBalance(new Money(newBalanceAmount));
+            lastDateInterestApplied = LocalDate.now();
+        }
+    }
+
+    @Override //override as penalty fee added
+    public void debitAccount(Money debit) {
+        BigDecimal debitAmount = debit.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
+            throw new IllegalArgumentException("Insufficient Funds");
+        } else {
+            BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
+
+            BigDecimal minimumBalanceAmount = this.getMinimumBalance().getAmount();
+            if ((currentBalanceAmount.compareTo(minimumBalanceAmount) >= 0)
+                    && (newBalanceAmount.compareTo(minimumBalanceAmount) < 0)) {
+                BigDecimal penaltyFeeAmount = this.getPenaltyFee().getAmount();
+                newBalanceAmount = newBalanceAmount.subtract(penaltyFeeAmount);
+            }
+            this.setBalance(new Money(newBalanceAmount));
         }
     }
 

@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
+
 import static java.util.Currency.*;
 
 
@@ -44,6 +47,9 @@ public abstract class Account {
     })
     private final Money penaltyFee = new Money(new BigDecimal("40"));
 
+    @Column(name = "creation_date")
+    private LocalDate creationDate = LocalDate.now(); // will automatically assign today's date
+
 
     //constructor for two AccountOwners
     public Account(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
@@ -55,5 +61,23 @@ public abstract class Account {
     public Account(AccountHolder primaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;
         this.balance = balance;
+    }
+
+    public void debitAccount(Money funds) {
+        BigDecimal debitAmount = funds.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
+            throw new IllegalArgumentException("Amount exceeds balance.");
+        } else {
+            BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
+            this.setBalance(new Money(newBalanceAmount));
+        }
+    }
+
+    public void creditAccount(Money funds) {
+        BigDecimal creditAmount = funds.getAmount();
+        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
+        BigDecimal newBalanceAmount = this.getBalance().getAmount().add(creditAmount);
+        this.setBalance(new Money(newBalanceAmount));
     }
 }
