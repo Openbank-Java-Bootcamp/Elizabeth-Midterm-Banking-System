@@ -46,16 +46,16 @@ public class Checking extends Account{
     //constructor for 1 owner
 
 
-    public Checking(AccountHolder primaryOwner, String secretKey) {
-        super(primaryOwner);
+    public Checking(AccountHolder primaryOwner, Money balance, String secretKey) {
+        super(primaryOwner, balance);
         this.secretKey = secretKey;
         this.status = AccountStatus.ACTIVE;
     }
 
     //constructor for 2 owners
-//    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
-//        super(primaryOwner, secondaryOwner);
-//        this.secretKey = secretKey;
-//        this.status = AccountStatus.ACTIVE;
-//    }
+    public Checking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, String secretKey) {
+        super(primaryOwner, secondaryOwner, balance);
+        this.secretKey = secretKey;
+        this.status = AccountStatus.ACTIVE;
+    }
 }

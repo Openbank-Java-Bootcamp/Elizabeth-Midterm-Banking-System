@@ -5,9 +5,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.asm.Advice;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +21,7 @@ public class AccountHolder extends User{
 
     @NotNull
     @Column(name = "date_of_birth")
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @NotNull //necessary?
     @Embedded
@@ -43,16 +47,27 @@ public class AccountHolder extends User{
     private List<Account> accounts;
 
 
-    public AccountHolder(Name name, String username, String password, Date dateOfBirth, Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(Name name, String username, String password, LocalDate dateOfBirth, Address primaryAddress, Address mailingAddress) {
         super(name, username, password);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
 
-    public AccountHolder(Name name, String username, String password, Date dateOfBirth, Address primaryAddress) {
+    public AccountHolder(Name name, String username, String password, LocalDate dateOfBirth, Address primaryAddress) {
         super(name, username, password);
         this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
+    }
+
+    //method to calculate age
+    public int calculateAge() {
+        LocalDate currentDate = LocalDate.now();
+        if ( dateOfBirth == null || currentDate == null) {
+            throw new NullPointerException();
+        } else {
+            return Period.between(dateOfBirth, currentDate).getYears();
+        }
+
     }
 }

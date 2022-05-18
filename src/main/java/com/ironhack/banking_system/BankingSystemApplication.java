@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -42,7 +43,8 @@ public class BankingSystemApplication {
 							new Name("Marjorie", "Stewart-Baxter"),
 							"MJB1972",
 							"catlady7",
-							new Date(1972, 04,01),
+							//new Date(1972, 04,01),
+							LocalDate.of(1972, 04, 01),
 							new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
 							));
 			accountHolderService.saveAccountHolder(
@@ -50,7 +52,8 @@ public class BankingSystemApplication {
 							new Name("Reginald", "Dawes"),
 							"ReggieD",
 							"DrRegger",
-							new Date(1998, 12,31),
+							//new Date(1998, 12,31),
+							LocalDate.of(1998, 12, 31),
 							new Address("c/ Atocha 216", "28039", "Madrid", "Spain")
 					));
 

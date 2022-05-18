@@ -28,12 +28,12 @@ public class StudentChecking extends Checking{
 
 
     //constructor for 1 owner
-    public StudentChecking(AccountHolder primaryOwner, String secretKey) {
-        super(primaryOwner, secretKey);
+    public StudentChecking(AccountHolder primaryOwner, Money balance, String secretKey) {
+        super(primaryOwner, balance, secretKey);
     }
 
     //constructor for 2 owners
-//    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey) {
-//        super(primaryOwner, secondaryOwner, secretKey);
-//    }
+    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, String secretKey) {
+        super(primaryOwner, secondaryOwner, balance, secretKey);
+    }
 }

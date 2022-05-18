@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,12 +21,13 @@ class SavingsTest {
                 new Name("Marjorie", "Stewart-Baxter"),
                 "MJB1972",
                 "catlady7",
-                new Date(1972, 04,01),
+                //new Date(1972, 04,01),
+                LocalDate.of(1972, 04,01),
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
-        savings1 = new Savings(accountHolder1, "secretKey1");
-        //customMinBalanceSavings = new Savings(accountHolder1, "secretKey2", new Money(new BigDecimal("99")));
+        savings1 = new Savings(accountHolder1, new Money(new BigDecimal("1200.00")),"secretKey1");
+
 
     }
 
@@ -67,5 +69,19 @@ class SavingsTest {
     void setInterestRate_WithinLimit_Works() {
         savings1.setInterestRate(new BigDecimal(.35));
         assertEquals(new BigDecimal(.35), savings1.getInterestRate());
+    }
+
+    @Test
+    void applyPenaltyFeeIfApplicable_BelowMinBalance_FeeApplied() {
+        savings1.setBalance(new Money(new BigDecimal("900")));
+        savings1.applyPenaltyFeeIfApplicable();
+        assertEquals(new BigDecimal("860.00"), savings1.getBalance().getAmount());
+    }
+
+    @Test
+    void applyPenaltyFeeIfApplicable_AboveMinBalance_FeeNotApplied() {
+        savings1.setBalance(new Money(new BigDecimal("1005")));
+        savings1.applyPenaltyFeeIfApplicable();
+        assertEquals(new BigDecimal("1005.00"), savings1.getBalance().getAmount());
     }
 }

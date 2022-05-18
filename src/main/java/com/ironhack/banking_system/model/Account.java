@@ -32,19 +32,28 @@ public abstract class Account {
 
     @Embedded
     @AttributeOverrides({
+            @AttributeOverride(name = "currency", column = @Column(name = "balance_currency")),
+            @AttributeOverride(name = "amount", column = @Column(name = "balance_amount"))
+    })
+    private Money balance;
+
+    @Embedded
+    @AttributeOverrides({
             @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount"))
     })
-    private final Money penaltyFee = new Money(new BigDecimal("40"), getInstance("USD"));
+    private final Money penaltyFee = new Money(new BigDecimal("40"));
 
 
     //constructor for two AccountOwners
-    public Account(AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+    public Account(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
+        this.balance = balance;
     }
 
-    public Account(AccountHolder primaryOwner) {
+    public Account(AccountHolder primaryOwner, Money balance) {
         this.primaryOwner = primaryOwner;
+        this.balance = balance;
     }
 }

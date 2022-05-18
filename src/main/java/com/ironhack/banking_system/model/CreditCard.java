@@ -26,52 +26,52 @@ public class CreditCard extends Account{
 
 
     //constructor for default creditLimit and default interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner) {
-        super(primaryOwner);
+    public CreditCard(AccountHolder primaryOwner, Money balance) {
+        super(primaryOwner, balance);
     }
 
     //constructor for default creditLimit and custom interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, BigDecimal interestRate) {
-        super(primaryOwner);
+    public CreditCard(AccountHolder primaryOwner, Money balance, BigDecimal interestRate) {
+        super(primaryOwner, balance);
         this.interestRate = interestRate;
     }
 
     //constructor for custom creditLimit and default interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money creditLimit) {
-        super(primaryOwner);
+    public CreditCard(AccountHolder primaryOwner, Money balance, Money creditLimit) {
+        super(primaryOwner, balance);
         this.creditLimit = creditLimit;
     }
 
     //constructor for custom creditLimit and custom interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money creditLimit, BigDecimal interestRate) {
-        super(primaryOwner);
+    public CreditCard(AccountHolder primaryOwner, Money balance, Money creditLimit, BigDecimal interestRate) {
+        super(primaryOwner, balance);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
     }
 
     //constructor for default creditLimit and default interestRate, 2 account holders
-//    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner) {
-//        super(primaryOwner, secondaryOwner);
-//    }
+    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
+        super(primaryOwner, secondaryOwner, balance);
+    }
 
     //constructor for default creditLimit and custom interestRate, 2 account holders
-//    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal interestRate) {
-//        super(primaryOwner, secondaryOwner);
-//        this.interestRate = interestRate;
-//    }
+    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {
+        super(primaryOwner, secondaryOwner, balance);
+        this.interestRate = interestRate;
+    }
 
     //constructor for custom creditLimit and default interestRate, 2 account holders
-//    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit) {
-//        super(primaryOwner, secondaryOwner);
-//        this.creditLimit = creditLimit;
-//    }
+    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, Money creditLimit) {
+        super(primaryOwner, secondaryOwner, balance);
+        this.creditLimit = creditLimit;
+    }
 
     //constructor for custom creditLimit and interestRate, 2 account holders
-//    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit, BigDecimal interestRate) {
-//        super(primaryOwner, secondaryOwner);
-//        this.creditLimit = creditLimit;
-//        this.interestRate = interestRate;
-//    }
+    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, Money creditLimit, BigDecimal interestRate) {
+        super(primaryOwner, secondaryOwner, balance);
+        this.creditLimit = creditLimit;
+        this.interestRate = interestRate;
+    }
 
 
     //setter for interestRate and creditLimit
