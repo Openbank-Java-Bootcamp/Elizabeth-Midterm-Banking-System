@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface AccountHolderServiceInterface {
 
+    AccountHolder getAccountHolderById(Long id);
+
     AccountHolder saveAccountHolder(AccountHolder accountHolder);
 
     List<AccountHolder> getAccountHolders();

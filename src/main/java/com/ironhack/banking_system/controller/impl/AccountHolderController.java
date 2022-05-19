@@ -10,20 +10,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/bank/accountholders")
 public class AccountHolderController implements AccountHolderControllerInterface {
 
     @Autowired
     private AccountHolderServiceInterface accountHolderService;
 
 
-    @GetMapping("/account-holders")
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public AccountHolder getAccountHolderById(@PathVariable Long id) {
+        return accountHolderService.getAccountHolderById(id);
+    }
+
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<AccountHolder> getAccountHolders() {
         return accountHolderService.getAccountHolders();
     }
 
-    @PostMapping("/account-holders")
+    @PostMapping("/accountholders")
     @ResponseStatus(HttpStatus.CREATED)
     public void saveAccountHolder(@RequestBody AccountHolder accountHolder) {
         accountHolderService.saveAccountHolder(accountHolder);

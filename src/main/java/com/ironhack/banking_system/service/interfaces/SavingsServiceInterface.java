@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface SavingsServiceInterface {
 
+    Savings getSavingsById(Long id);
+
     Savings saveSavings(Savings savings);
 
     public void updateBalance(Long id, Money balance);

@@ -10,6 +10,8 @@ import com.ironhack.banking_system.service.interfaces.SavingsServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,6 +37,30 @@ public class SavingsService implements SavingsServiceInterface {
 //        savings.setSecretKey(passwordEncoder.encode(savings.getSecretKey())); //encode secretKey???
 //        return savingsRepository.save(savings);
 //    }
+
+    public Savings getSavingsById(Long id) {
+        //get username from token
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String tokenUsername = "";
+        if (principal instanceof UserDetails) {
+             tokenUsername = ((UserDetails)principal).getUsername();
+        } else {
+             tokenUsername = principal.toString();
+        }
+        //find savings account
+        Optional<Savings> foundSavings = savingsRepository.findById(id);
+        if (foundSavings.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Savings Account with that ID");
+        } else {
+            String primaryUsername = foundSavings.get().getPrimaryOwner().getUsername();
+            String secondaryUsername = foundSavings.get().getSecondaryOwner().getUsername();
+            if (tokenUsername.equals(primaryUsername) || tokenUsername.equals(secondaryUsername)) {
+                return foundSavings.get();
+            } else {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access restricted to Account Owners");
+            }
+        }
+    }
 
     public Savings saveSavings(Savings savings) {
         AccountHolder foundAccountHolder = accountHolderRepository.findByUsername(savings.getPrimaryOwner().getUsername());

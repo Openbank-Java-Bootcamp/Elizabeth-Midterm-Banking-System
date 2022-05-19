@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface AccountHolderControllerInterface {
 
+    AccountHolder getAccountHolderById(Long id);
 
     List<AccountHolder> getAccountHolders();
 

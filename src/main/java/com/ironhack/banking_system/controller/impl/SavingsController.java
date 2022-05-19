@@ -12,28 +12,35 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/bank/accounts/savings")
 public class SavingsController implements SavingsControllerInterface {
 
     @Autowired
     private SavingsServiceInterface savingsService;
 
 
-    @PostMapping("/accounts/savings")
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Savings getSavings(@PathVariable Long id) {
+        return savingsService.getSavingsById(id);
+    }
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void saveSavings(@RequestBody Savings savings) {
         savingsService.saveSavings(savings);
     }
 
-    @PatchMapping("accounts/savings/{id}/balance")
+    @PatchMapping("/{id}/balance")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void partialUpdateBalance(@PathVariable Long id, @RequestBody AccountBalanceOnlyDTO partialAccount) {
         savingsService.updateBalance(id, partialAccount.getBalance());
     }
 
-    @PatchMapping("accounts/savings/{id}/status")
+    @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void partialUpdateStatus(@PathVariable Long id, @RequestBody AccountStatusOnlyDTO partialAccount) {
+        public void partialUpdateStatus(@PathVariable Long id, @RequestBody AccountStatusOnlyDTO partialAccount) {
         savingsService.updateStatus(id, partialAccount.getStatus());
     }
 

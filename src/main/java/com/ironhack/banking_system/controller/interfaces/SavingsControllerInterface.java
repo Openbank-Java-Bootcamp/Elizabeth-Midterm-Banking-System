@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface SavingsControllerInterface {
 
-    void saveSavings(Savings savings);
+    public Savings getSavings(Long id);
+
+    public void saveSavings(Savings savings);
 
     public void partialUpdateBalance(Long id, AccountBalanceOnlyDTO partialAccount);
 

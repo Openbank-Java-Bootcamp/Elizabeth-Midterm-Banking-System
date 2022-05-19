@@ -12,22 +12,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class SavingsControllerTest {
-
+class AccountHolderControllerTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private SavingsRepository savingsRepository;
 
     @Autowired
     private AccountHolderRepository accountHolderRepository;
@@ -36,9 +35,9 @@ class SavingsControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+
     private AccountHolder accountHolder1;
     private AccountHolder accountHolder2;
-
 
 
     @BeforeEach
@@ -61,29 +60,6 @@ class SavingsControllerTest {
                 new Address("c/ Atocha 216", "Toledo", "Spain", "26784")
         );
         accountHolderRepository.saveAll(List.of(accountHolder1, accountHolder2));
-//        List<AccountHolder> accountHolders = accountHolderRepository.saveAll(
-//                List.of(
-//                        new AccountHolder(
-//                                new Name("Marjorie", "Stewart-Baxter"),
-//                                "MJB1972",
-//                                "catlady7",
-//                                //new Date(1972, 04,01),
-//                                1972, 04, 01,
-//                                new Address("c/ Alameda 46", "Madrid", "Spain", "28012")
-//                        ),
-//                        new AccountHolder(
-//                                new Name("Reginald", "Dawes"),
-//                                "ReggieD",
-//                                "DrRegger",
-//                                //new Date(1998, 12,31),
-//                                1998, 12, 31,
-//                                new Address("c/ Atocha 216", "Toledo", "Spain", "26784")
-//                        )
-//                )
-//        );
-
-
-
     }
 
     @AfterEach
@@ -91,23 +67,18 @@ class SavingsControllerTest {
         accountHolderRepository.deleteAll();
     }
 
-
-
-
-
-//    @Test
-//    void saveSavings() throws Exception {
-//        String body = objectMapper.writeValueAsString(accountHolder1, new Money(new BigDecimal("1200.00")),"secretKey1");
-//        mockMvc.perform(post("/bank/accounts/savings").content(body)
-//                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
-//    }
-
     @Test
-    void updateBalance() {
+    void getAccountHolderById() throws Exception {
+        MvcResult result = mockMvc.perform(get("/bank/accounts/savings/1"))
+                .andExpect(status().isOk()).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("Marjorie"));
     }
 
     @Test
-    void updateStatus() {
+    void getAccountHolders() {
     }
 
+    @Test
+    void saveAccountHolder() {
+    }
 }

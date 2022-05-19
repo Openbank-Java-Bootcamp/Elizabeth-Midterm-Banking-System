@@ -43,8 +43,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().antMatchers("/bank/login/**").permitAll();//anyone can have access to login
+        //http.authorizeRequests().antMatchers(GET, "/bank/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(GET, "/bank/users").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/bank/**" +
+        http.authorizeRequests().antMatchers(GET, "/bank/accounts/savings/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
+        http.authorizeRequests().antMatchers(GET, "/bank/accountholders/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/bank/accounts/checking" +
                 "").hasAnyAuthority("ROLE_ADMIN");//only admin can access post requests
         http.authorizeRequests().anyRequest().authenticated(); //any other request will have to be authenticated
         http.addFilter(customAuthenticationFilter);

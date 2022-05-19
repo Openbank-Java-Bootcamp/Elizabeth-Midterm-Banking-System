@@ -22,6 +22,10 @@ public class Money {
         setAmount(amount.setScale(currency.getDefaultFractionDigits(), rounding));
     }
 
+    public Money(){
+        this(new BigDecimal("0"),EUR,DEFAULT_ROUNDING);
+    }
+
     //Class constructor specifying amount, and currency. Uses default RoundingMode HALF_EVEN.
     public Money(BigDecimal amount, Currency currency) {
         this(amount, currency, DEFAULT_ROUNDING);

@@ -1,5 +1,6 @@
 package com.ironhack.banking_system.controller.impl;
 
+import com.ironhack.banking_system.DTO.CheckingDTO;
 import com.ironhack.banking_system.controller.interfaces.CheckingControllerInterface;
 import com.ironhack.banking_system.model.Checking;
 import com.ironhack.banking_system.model.Money;
@@ -16,10 +17,11 @@ public class CheckingController implements CheckingControllerInterface {
     private CheckingServiceInterface checkingService;
 
 
+
     @PostMapping("/accounts/checking")
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveChecking(@RequestBody Checking checking) {
-        checkingService.saveChecking(checking);
+    public void saveChecking(@RequestBody CheckingDTO checkingDTO) {
+        checkingService.saveChecking(checkingDTO);
     }
 
     @GetMapping("/accounts/checking/{id}")
