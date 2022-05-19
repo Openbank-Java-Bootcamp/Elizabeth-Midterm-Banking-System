@@ -1,5 +1,6 @@
 package com.ironhack.banking_system.controller.impl;
 
+import com.ironhack.banking_system.DTO.TransferDTO;
 import com.ironhack.banking_system.controller.interfaces.TransferControllerInterface;
 import com.ironhack.banking_system.model.Transfer;
 import com.ironhack.banking_system.service.interfaces.TransferServiceInterface;
@@ -16,7 +17,9 @@ public class TransferController implements TransferControllerInterface {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveTransfer(@RequestBody Transfer transfer) {
-
+    public void saveTransfer(@RequestBody TransferDTO transferDTO) {
+        transferService.saveTransfer(transferDTO);
     }
+
+
 }

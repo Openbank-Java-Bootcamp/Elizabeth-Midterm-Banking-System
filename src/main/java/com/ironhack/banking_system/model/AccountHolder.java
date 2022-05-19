@@ -5,13 +5,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.bytebuddy.asm.Advice;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Data
 @NoArgsConstructor
@@ -47,14 +44,14 @@ public class AccountHolder extends User{
     private List<Account> accounts;
 
 
-    public AccountHolder(Name name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress, Address mailingAddress) {
         super(name, username, password);
         setDateOfBirth(birthYear, birthMonth, birthDate);
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
 
-    public AccountHolder(Name name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress) {
+    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress) {
         super(name, username, password);
         setDateOfBirth(birthYear, birthMonth, birthDate);
         this.primaryAddress = primaryAddress;

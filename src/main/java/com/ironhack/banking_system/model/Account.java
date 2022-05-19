@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 import static java.util.Currency.*;
 
@@ -45,10 +46,15 @@ public abstract class Account {
             @AttributeOverride(name = "currency", column = @Column(name = "penalty_fee_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "penalty_fee_amount"))
     })
-    private final Money penaltyFee = new Money(new BigDecimal("40"));
+    private Money penaltyFee = new Money(new BigDecimal("40"));
 
     @Column(name = "creation_date")
     private LocalDate creationDate = LocalDate.now(); // will automatically assign today's date
+
+
+//    private List<Transfer> transfersSent;
+//
+//    private List<Transfer> transfersReceived;
 
 
     //constructor for two AccountOwners
@@ -67,7 +73,7 @@ public abstract class Account {
         BigDecimal debitAmount = funds.getAmount();
         BigDecimal currentBalanceAmount = this.getBalance().getAmount();
         if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
-            throw new IllegalArgumentException("Amount exceeds balance.");
+            throw new IllegalArgumentException("Insufficient Funds.");
         } else {
             BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
             this.setBalance(new Money(newBalanceAmount));

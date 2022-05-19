@@ -18,14 +18,14 @@ class AccountHolderTest {
     @BeforeEach
     void setUp() {
         accountHolder1 = new AccountHolder(
-                new Name("Marjorie", "Stewart-Baxter"),
+                "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
                 1972, 04,01,
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
         accountHolder2 = new AccountHolder(
-                        new Name("Reginald", "Dawes"),
+                        "Reginald Dawes",
                         "ReggieD",
                         "DrRegger",
                         //new Date(1998, 12,31),

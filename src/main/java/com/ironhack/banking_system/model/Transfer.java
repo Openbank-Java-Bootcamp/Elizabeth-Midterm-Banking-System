@@ -1,26 +1,34 @@
 package com.ironhack.banking_system.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table
 public class Transfer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long originAccountId;
+    @ManyToOne
+    @JoinColumn(name = "origin_account_id")
+    private Account originAccount;
 
-    private Long destinationAccountId;
+    @ManyToOne
+    @JoinColumn(name = "destination_account_id")
+    private Account destinationAccount;
 
     private Money funds;
 
 
+    public Transfer(Account originAccount, Account destinationAccount, Money funds) {
+        this.originAccount = originAccount;
+        this.destinationAccount = destinationAccount;
+        this.funds = funds;
+    }
 }

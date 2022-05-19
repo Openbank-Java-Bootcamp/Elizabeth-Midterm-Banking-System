@@ -13,7 +13,7 @@ import static java.util.Currency.getInstance;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "student_checking")
+//@Table(name = "student_checking")
 public class StudentChecking extends Checking{
 
 

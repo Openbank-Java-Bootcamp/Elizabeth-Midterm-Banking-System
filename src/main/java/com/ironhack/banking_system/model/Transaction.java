@@ -1,12 +1,19 @@
 package com.ironhack.banking_system.model;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Check;
 
+@Data
 @NoArgsConstructor
 public class Transaction {
 
     //overloading transfer method for all types of account combos
+
+    public static void transfer(Account originAccount, Account destinationAccount, Money funds) {
+        originAccount.debitAccount(funds);
+        destinationAccount.creditAccount(funds);
+    }
     static void transfer(Savings originAccount, Savings destinationAccount, Money funds) {
         originAccount.debitAccount(funds);
         destinationAccount.creditAccount(funds);

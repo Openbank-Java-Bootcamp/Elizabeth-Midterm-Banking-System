@@ -3,7 +3,6 @@ package com.ironhack.banking_system.controller.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.banking_system.model.AccountHolder;
 import com.ironhack.banking_system.model.Address;
-import com.ironhack.banking_system.model.Name;
 import com.ironhack.banking_system.repository.AccountHolderRepository;
 import com.ironhack.banking_system.repository.SavingsRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -16,8 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class SavingsControllerTest {
@@ -45,7 +42,7 @@ class SavingsControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         accountHolder1 = new AccountHolder(
-                new Name("Marjorie", "Stewart-Baxter"),
+                "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
                 //new Date(1972, 04,01),
@@ -53,7 +50,7 @@ class SavingsControllerTest {
                 new Address("c/ Alameda 46", "Madrid", "Spain", "28012")
         );
         accountHolder2 = new AccountHolder(
-                new Name("Reginald", "Dawes"),
+                "Reginald Dawes",
                 "ReggieD",
                 "DrRegger",
                 //new Date(1998, 12,31),

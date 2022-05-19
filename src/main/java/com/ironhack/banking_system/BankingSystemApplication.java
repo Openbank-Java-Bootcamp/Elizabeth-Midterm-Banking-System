@@ -35,13 +35,13 @@ public class BankingSystemApplication {
 			roleService.saveRole(new Role(null, "ROLE_ADMIN"));
 			roleService.saveRole(new Role(null, "ROLE_USER"));
 
-			adminService.saveAdmin(new Admin(new Name("Clarence", "Thomas"), "CThomas", "password1"));
-			adminService.saveAdmin(new Admin(new Name("Sadie", "Hawkins"), "SHawkins", "password2"));
+			adminService.saveAdmin(new Admin("Clarence Thomas", "CThomas", "password1"));
+			adminService.saveAdmin(new Admin("Sadie Hawkins", "SHawkins", "password2"));
 
 
 			accountHolderService.saveAccountHolder(
 					new AccountHolder(
-							new Name("Marjorie", "Stewart-Baxter"),
+							"Marjorie Stewart-Baxter",
 							"MJB1972",
 							"catlady7",
 							//new Date(1972, 04,01),
@@ -50,7 +50,7 @@ public class BankingSystemApplication {
 							));
 			accountHolderService.saveAccountHolder(
 					new AccountHolder(
-							new Name("Reginald", "Dawes"),
+							"Reginald Dawes",
 							"ReggieD",
 							"DrRegger",
 							//new Date(1998, 12,31),
@@ -59,7 +59,7 @@ public class BankingSystemApplication {
 					));
 			accountHolderService.saveAccountHolder(
 					new AccountHolder(
-							new Name("Carrie", "Winston"),
+							"Carrie Winston",
 							"CWinston",
 							"CarrieBearie",
 							2002, 2, 27,
@@ -67,7 +67,7 @@ public class BankingSystemApplication {
 					));
 			accountHolderService.saveAccountHolder(
 					new AccountHolder(
-							new Name("Greg", "Winston"),
+							"Greg Winston",
 							"GWinston",
 							"greg123",
 							1975, 10, 15,

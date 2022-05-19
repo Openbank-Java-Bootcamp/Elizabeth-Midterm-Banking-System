@@ -18,7 +18,7 @@ class SavingsTest {
     @BeforeEach
     void setUp() {
         accountHolder1 = new AccountHolder(
-                new Name("Marjorie", "Stewart-Baxter"),
+                "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
                 //new Date(1972, 04,01),

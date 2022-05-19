@@ -16,7 +16,7 @@ class StudentCheckingTest {
     @BeforeEach
     void setUp() {
         accountHolder1 = new AccountHolder(
-                new Name("Dennis", "Menace"),
+                "Dennis Menace",
                 "DennisM",
                 "rascal42",
                 2000, 8,20,

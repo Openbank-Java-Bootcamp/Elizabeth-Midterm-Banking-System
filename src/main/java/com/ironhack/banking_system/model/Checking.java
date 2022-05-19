@@ -25,7 +25,7 @@ public class Checking extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "minimum_balance_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "minimum_balance_amount"))
     })
-    private final Money minimumBalance = new Money(new BigDecimal("250"), getInstance("USD"));
+    private Money minimumBalance = new Money(new BigDecimal("250"), getInstance("USD"));
 
     @Embedded
     //@Column(name = "monthly_maintenance_fee") //final as this does not change
@@ -33,7 +33,7 @@ public class Checking extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "monthly_maintenance_fee_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "monthly_maintenance_fee_amount"))
     })
-    private final Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
+    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
 
     @Column
     @Enumerated(EnumType.STRING)
