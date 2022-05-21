@@ -19,12 +19,11 @@ class CheckingTest {
                 "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
-                //new Date(1972, 04,01),
-                1972, 04,01,
+                LocalDate.of(1972,4,1),
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
-        checking1 = new Checking(accountHolder1, new Money(BigDecimal.valueOf(500)), "secretkey1");
+        checking1 = new Checking(new Money(BigDecimal.valueOf(500)), "secretkey1", accountHolder1);
     }
 
     @Test

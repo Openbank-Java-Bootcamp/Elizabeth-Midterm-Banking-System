@@ -16,8 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -43,12 +42,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeRequests().antMatchers("/bank/login/**").permitAll();//anyone can have access to login
-        //http.authorizeRequests().antMatchers(GET, "/bank/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(GET, "/bank/users").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(GET, "/bank/accounts/savings/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
+        //              /admins
+        http.authorizeRequests().antMatchers(POST, "/bank/admins").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET, "/bank/admins").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET, "/bank/admins/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PUT, "/bank/admins/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PATCH, "/bank/admins/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/bank/admins/**").hasAnyAuthority("ROLE_ADMIN");
+        //              /accountholders
+        http.authorizeRequests().antMatchers(POST, "/bank/accountholders").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(GET, "/bank/accountholders").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(GET, "/bank/accountholders/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().antMatchers(POST, "/bank/accounts/checking").hasAnyAuthority("ROLE_ADMIN");//only admin can access post requests
-        http.authorizeRequests().antMatchers(POST, "/bank/transfers").hasAnyAuthority("ROLE_USER");//only admin can access post requests
+        http.authorizeRequests().antMatchers(PUT, "/bank/accountholders/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(PATCH, "/bank/accountholders/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(DELETE, "/bank/accountholders/**").hasAnyAuthority("ROLE_ADMIN");
+
+        http.authorizeRequests().antMatchers(GET, "/bank/accounts/savings/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER");
+        //                  /checking
+        http.authorizeRequests().antMatchers(POST, "/bank/accounts/checking").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().antMatchers(POST, "/bank/accounts/checking/balance/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(POST, "/bank/thirdparties").hasAnyAuthority("ROLE_ADMIN");
+        //                  /transfers
+        http.authorizeRequests().antMatchers(POST, "/bank/transfers/internaltransfers/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(POST, "/bank/transfers/fromthirdparty/**").permitAll();
+        http.authorizeRequests().antMatchers(POST, "/bank/transfers/tothirdparty/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated(); //any other request will have to be authenticated
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

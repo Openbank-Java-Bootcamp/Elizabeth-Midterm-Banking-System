@@ -24,9 +24,9 @@ public class CheckingController implements CheckingControllerInterface {
         checkingService.saveChecking(checkingDTO);
     }
 
-    @GetMapping("/accounts/checking/{id}")
+    @GetMapping("/accounts/checking/balance/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Money getCheckingBalance(@RequestBody Long id) {
+    public Money getCheckingBalance(@PathVariable Long id) {
         return checkingService.getCheckingBalance(id);
     }
 

@@ -21,15 +21,14 @@ class AccountHolderTest {
                 "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
-                1972, 04,01,
+                LocalDate.of(1972,4,1),
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
         accountHolder2 = new AccountHolder(
                         "Reginald Dawes",
                         "ReggieD",
                         "DrRegger",
-                        //new Date(1998, 12,31),
-                        1998, 12, 31,
+                        LocalDate.of(1998,12,31),
                         new Address("c/ Atocha 216", "28039", "Madrid", "Spain")
                 );
         accountHolder3 = new AccountHolder();

@@ -29,7 +29,7 @@ public class AccountHolderController implements AccountHolderControllerInterface
         return accountHolderService.getAccountHolders();
     }
 
-    @PostMapping("/accountholders")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void saveAccountHolder(@RequestBody AccountHolder accountHolder) {
         accountHolderService.saveAccountHolder(accountHolder);

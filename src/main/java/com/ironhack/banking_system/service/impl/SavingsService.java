@@ -69,10 +69,10 @@ public class SavingsService implements SavingsServiceInterface {
         }
         try {
             return savingsRepository.save(new Savings(
-                    savings.getPrimaryOwner(),
-                    savings.getSecondaryOwner(),
                     savings.getBalance(),
                     savings.getSecretKey(),
+                    savings.getPrimaryOwner(),
+                    savings.getSecondaryOwner(),
                     savings.getMinimumBalance(),
                     savings.getInterestRate()
                     )
@@ -80,7 +80,7 @@ public class SavingsService implements SavingsServiceInterface {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Savings Account");
         }
-        //log.info("Saving new savings account {} to the database", savings.getId());
+
         //savings.setSecretKey(passwordEncoder.encode(savings.getSecretKey())); //encode secretKey???
         //return savingsRepository.save(savings);
     }

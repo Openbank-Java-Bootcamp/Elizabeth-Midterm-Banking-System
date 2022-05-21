@@ -22,12 +22,11 @@ class CreditCardTest {
                 "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
-                //new Date(1972, 04,01),
-                1972, 04,01,
+                LocalDate.of(1972,4,1),
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
-        creditCard1 = new CreditCard(accountHolder1, new Money(new BigDecimal("0")));
+        creditCard1 = new CreditCard(new Money(new BigDecimal("0")), "secretKey6", accountHolder1, null, null);
     }
 
     @AfterEach
@@ -52,6 +51,12 @@ class CreditCardTest {
         assertEquals(new BigDecimal(".15"), creditCard1.getInterestRate());
     }
 
+    @Test
+    void setInterestRate_Null_Default() {
+        creditCard1.setInterestRate(null);
+        assertEquals(new BigDecimal("0.2"), creditCard1.getInterestRate());
+    }
+
 
     @Test
     void setCreditLimit_BelowLimit_100() {
@@ -71,10 +76,17 @@ class CreditCardTest {
         assertEquals(new BigDecimal("5000.00"), creditCard1.getCreditLimit().getAmount());
     }
 
+    @Test
+    void setCreditLimit_Null_Default() {
+        creditCard1.setCreditLimit(null);
+        assertEquals(new BigDecimal("100.00"), creditCard1.getCreditLimit().getAmount());
+    }
+
 
     @Test
     void applyInterestIfApplicable_DueForInterest_InterestApplied() {
-        creditCard1.setLastDateInterestApplied(LocalDate.of(2022, 04,15));
+        creditCard1.setDateInterestDue(LocalDate.now().minusDays(1));
+        System.out.println(creditCard1.getInterestRate());
         BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
         BigDecimal monthlyInterestRate = creditCard1.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
         BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.multiply(monthlyInterestRate));

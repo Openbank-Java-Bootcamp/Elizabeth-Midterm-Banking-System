@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/bank/admins")
 public class AdminController implements AdminControllerInterface {
 
     @Autowired
     private AdminServiceInterface adminService;
 
 
-    @GetMapping("/admins")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Admin> getAdmins() {
         return adminService.getAdmins();
     }
 
-    @PostMapping("/admins")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void saveAdmin(@RequestBody Admin admin) {
         adminService.saveAdmin(admin);

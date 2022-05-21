@@ -1,9 +1,14 @@
 package com.ironhack.banking_system.model;
 
+import com.ironhack.banking_system.DTO.TransferThirdPartyDTO;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
 @Entity
 @Table(name = "third_party")
+@NoArgsConstructor
 public class ThirdParty {
 
     @Id
@@ -15,4 +20,10 @@ public class ThirdParty {
 
     @Column(name = "hashed_key")
     private String hashedKey;
+
+
+    public ThirdParty(String name, String hashedKey) {
+        this.name = name;
+        this.hashedKey = hashedKey;
+    }
 }

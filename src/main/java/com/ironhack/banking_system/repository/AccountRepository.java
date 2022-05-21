@@ -10,6 +10,11 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Query(value = "SELECT * FROM account WHERE id = :id", nativeQuery = true)
-    Optional<Account> findById(Long id);
+    //@Query(value = "SELECT * FROM account WHERE id = :id", nativeQuery = true)
+    //Account findById(Long id);
+
+    @Query(value = "SELECT dtype FROM account WHERE id = :id", nativeQuery = true)
+    String getDType(Long id);
+
+
 }

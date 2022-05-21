@@ -21,19 +21,16 @@ class SavingsTest {
                 "Marjorie Stewart-Baxter",
                 "MJB1972",
                 "catlady7",
-                //new Date(1972, 04,01),
-                1972, 04,01,
+                LocalDate.of(1972,4,1),
                 new Address("c/ Alameda 46", "28012", "Madrid", "Spain")
         );
 
-        savings1 = new Savings(accountHolder1, new Money(new BigDecimal("1200.00")),"secretKey1");
+        savings1 = new Savings(new Money(new BigDecimal("1200.00")),"secretKey1", accountHolder1, null, null, null);
 
 
     }
 
-    @AfterEach
-    void tearDown() {
-    }
+
 
     @Test
     void setMinimumBalance_BelowLimit_100() {
@@ -51,6 +48,12 @@ class SavingsTest {
     void setMinimumBalance_WithinLimit_Works() {
         savings1.setMinimumBalance(new Money(new BigDecimal(500)));
         assertEquals(new BigDecimal("500.00"), savings1.getMinimumBalance().getAmount());
+    }
+
+    @Test
+    void setMinimumBalance_Null_Default() {
+        savings1.setMinimumBalance(null);
+        assertEquals(new BigDecimal("1000.00"), savings1.getMinimumBalance().getAmount());
     }
 
     @Test
@@ -72,6 +75,12 @@ class SavingsTest {
     }
 
     @Test
+    void setInterestRate_Null_Default() {
+        savings1.setInterestRate(null);
+        assertEquals(new BigDecimal("0.0025"), savings1.getInterestRate());
+    }
+
+    @Test
     void applyPenaltyFeeIfApplicable_BelowMinBalance_FeeApplied() {
         savings1.setBalance(new Money(new BigDecimal("900")));
         savings1.applyPenaltyFeeIfApplicable();
@@ -87,7 +96,7 @@ class SavingsTest {
 
     @Test
     void applyInterestIfApplicable_DueForInterest_InterestApplied() {
-        savings1.setLastDateInterestApplied(LocalDate.of(2021, 04,15));
+        savings1.setDateInterestDue(LocalDate.now().minusDays(1));
         BigDecimal originalBalanceAmount = savings1.getBalance().getAmount();
         BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.multiply(savings1.getInterestRate()));
         savings1.applyInterestIfApplicable();

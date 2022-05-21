@@ -37,16 +37,16 @@ public class CheckingService implements CheckingServiceInterface {
     public Checking saveChecking(CheckingDTO checkingDTO) {
         Optional<AccountHolder> foundPrimaryOwner = accountHolderRepository.findById(checkingDTO.getPrimaryOwnerId());
         Optional<AccountHolder> foundSecondaryOwner = accountHolderRepository.findById(checkingDTO.getSecondaryOwnerId());
-        if (foundPrimaryOwner.isEmpty() || foundSecondaryOwner.isEmpty()) {
+        if (foundPrimaryOwner==null || foundSecondaryOwner==null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Primary or Secondary Account Owner not found in database.");
         } else {
             if (foundPrimaryOwner.get().calculateAge() <= 24) {
                 try {
                     return studentCheckingRepository.save(new StudentChecking(
-                                    foundPrimaryOwner.get(),
-                                    foundSecondaryOwner.get(),
-                                    checkingDTO.getBalance(),
-                                    checkingDTO.getSecretKey()
+                            checkingDTO.getBalance(),
+                            checkingDTO.getSecretKey(),
+                            foundPrimaryOwner.get(),
+                            foundSecondaryOwner.get()
                             )
                     );
                 } catch (Exception e) {
@@ -55,10 +55,10 @@ public class CheckingService implements CheckingServiceInterface {
             } else {
                 try {
                     return checkingRepository.save(new Checking(
-                            foundPrimaryOwner.get(),
-                            foundSecondaryOwner.get(),
                             checkingDTO.getBalance(),
-                            checkingDTO.getSecretKey()
+                            checkingDTO.getSecretKey(),
+                            foundPrimaryOwner.get(),
+                            foundSecondaryOwner.get()
                     ));
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Savings Account");

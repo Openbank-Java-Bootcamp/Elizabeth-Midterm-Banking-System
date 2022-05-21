@@ -44,18 +44,30 @@ public class AccountHolder extends User{
     private List<Account> accounts;
 
 
-    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress, Address mailingAddress) {
+    public AccountHolder(String name, String username, String password, LocalDate dateOfBirth, Address primaryAddress, Address mailingAddress) {
         super(name, username, password);
-        setDateOfBirth(birthYear, birthMonth, birthDate);
+        this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
+//    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress, Address mailingAddress) {
+//        super(name, username, password);
+//        setDateOfBirth(birthYear, birthMonth, birthDate);
+//        this.primaryAddress = primaryAddress;
+//        this.mailingAddress = mailingAddress;
+//    }
 
-    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress) {
+    public AccountHolder(String name, String username, String password, LocalDate dateOfBirth, Address primaryAddress) {
         super(name, username, password);
-        setDateOfBirth(birthYear, birthMonth, birthDate);
+        this.dateOfBirth = dateOfBirth;
         this.primaryAddress = primaryAddress;
     }
+
+//    public AccountHolder(String name, String username, String password, int birthYear, int birthMonth, int birthDate, Address primaryAddress) {
+//        super(name, username, password);
+//        setDateOfBirth(birthYear, birthMonth, birthDate);
+//        this.primaryAddress = primaryAddress;
+//    }
 
     //custom setter for dateOfBirth
 

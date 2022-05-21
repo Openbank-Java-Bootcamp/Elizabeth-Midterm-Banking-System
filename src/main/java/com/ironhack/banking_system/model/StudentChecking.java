@@ -17,23 +17,18 @@ import static java.util.Currency.getInstance;
 public class StudentChecking extends Checking{
 
 
-    @Column(name = "monthly_maintenance_fee")
-    //private Money monthlyMaintenanceFee = new Money(new BigDecimal("0"), getInstance("USD"));
-    private Money monthlyMaintenanceFee = null;
 
+    //CONSTRUCTORS
 
-    @Column(name = "minimum_balance")
-   // private Money minimumBalance = new Money(new BigDecimal("0"), getInstance("USD"));
-    private Money minimumBalance = null;
-
-
-    //constructor for 1 owner
-    public StudentChecking(AccountHolder primaryOwner, Money balance, String secretKey) {
-        super(primaryOwner, balance, secretKey);
+    public StudentChecking(Money balance, String secretKey, AccountHolder primaryOwner) {
+        super(balance, secretKey, primaryOwner);
+        super.setMinimumBalance(null);
+        super.setMonthlyMaintenanceFee(null);
     }
 
-    //constructor for 2 owners
-    public StudentChecking(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, String secretKey) {
-        super(primaryOwner, secondaryOwner, balance, secretKey);
+    public StudentChecking(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+        super(balance, secretKey, primaryOwner, secondaryOwner);
+        super.setMinimumBalance(null);
+        super.setMonthlyMaintenanceFee(null);
     }
 }

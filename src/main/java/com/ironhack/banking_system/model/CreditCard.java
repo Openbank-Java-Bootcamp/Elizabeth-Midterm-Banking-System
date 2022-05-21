@@ -23,104 +23,125 @@ public class CreditCard extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "credit_limit_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "credit_limit_amount"))
     })
-    private Money creditLimit = new Money(new BigDecimal("100"), getInstance("USD"));
-
-    @Column(name = "interest_rate")
-    private BigDecimal interestRate = new BigDecimal(".2");
-
-    private LocalDate lastDateInterestApplied = LocalDate.now();//will set it to date of creation
+    private Money creditLimit = new Money(new BigDecimal("100"));
 
 
-    //constructor for default creditLimit and default interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money balance) {
-        super(primaryOwner, balance);
+    //CONSTRUCTORS
+    //default
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner) {
+//        super(balance, secretKey, primaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(BigDecimal.valueOf(.2));
+//    }
+//
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
+//        super(balance, secretKey, primaryOwner, secondaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(BigDecimal.valueOf(.2));
+//    }
+//
+//
+//    //custom creditLimit and default interestRate
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, Money creditLimit) {
+//        super(balance, secretKey, primaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(BigDecimal.valueOf(.2));
+//        setCreditLimit(creditLimit);
+//    }
+//
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit) {
+//        super(balance, secretKey, primaryOwner, secondaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(BigDecimal.valueOf(.2));
+//        setCreditLimit(creditLimit);
+//    }
+//
+//    //default creditLimit and custom interestRate
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, BigDecimal interestRate) {
+//        super(balance, secretKey, primaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(interestRate);
+//    }
+//
+//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal interestRate) {
+//        super(balance, secretKey, primaryOwner, secondaryOwner);
+//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+//        super.setInterestRate(interestRate);
+//    }
+
+    //custom creditLimit and custom interestRate
+    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, BigDecimal interestRate, Money creditLimit) {
+        super(balance, secretKey, primaryOwner);
+        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+        setInterestRate(interestRate);
+        setCreditLimit(creditLimit);
     }
 
-    //constructor for default creditLimit and custom interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money balance, BigDecimal interestRate) {
-        super(primaryOwner, balance);
-        this.interestRate = interestRate;
+    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal interestRate, Money creditLimit) {
+        super(balance, secretKey, primaryOwner, secondaryOwner);
+        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
+        setInterestRate(interestRate);
+        setCreditLimit(creditLimit);
     }
 
-    //constructor for custom creditLimit and default interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money balance, Money creditLimit) {
-        super(primaryOwner, balance);
-        this.creditLimit = creditLimit;
-    }
 
-    //constructor for custom creditLimit and custom interestRate, 1 account holder
-    public CreditCard(AccountHolder primaryOwner, Money balance, Money creditLimit, BigDecimal interestRate) {
-        super(primaryOwner, balance);
-        this.creditLimit = creditLimit;
-        this.interestRate = interestRate;
-    }
 
-    //constructor for default creditLimit and default interestRate, 2 account holders
-    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance) {
-        super(primaryOwner, secondaryOwner, balance);
-    }
 
-    //constructor for default creditLimit and custom interestRate, 2 account holders
-    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, BigDecimal interestRate) {
-        super(primaryOwner, secondaryOwner, balance);
-        this.interestRate = interestRate;
-    }
-
-    //constructor for custom creditLimit and default interestRate, 2 account holders
-    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, Money creditLimit) {
-        super(primaryOwner, secondaryOwner, balance);
-        this.creditLimit = creditLimit;
-    }
-
-    //constructor for custom creditLimit and interestRate, 2 account holders
-    public CreditCard(AccountHolder primaryOwner, AccountHolder secondaryOwner, Money balance, Money creditLimit, BigDecimal interestRate) {
-        super(primaryOwner, secondaryOwner, balance);
-        this.creditLimit = creditLimit;
-        this.interestRate = interestRate;
-    }
 
 
     //setter for interestRate and creditLimit
+    @Override
     public void setInterestRate(BigDecimal interestRate) {
-        BigDecimal lowerLimit = new BigDecimal("0.1");
-        BigDecimal upperLimit = new BigDecimal("0.2");
-
-        if (interestRate.compareTo(lowerLimit) <= 0) {
-            this.interestRate = lowerLimit;
-        } else if (interestRate.compareTo(upperLimit) >= 1) {
-            this.interestRate = upperLimit;
+        BigDecimal defaultRate = new BigDecimal("0.2");
+        if (interestRate == null) {
+            super.setInterestRate(defaultRate);
         } else {
-            this.interestRate = interestRate;
+            BigDecimal lowerLimit = new BigDecimal("0.1");
+            BigDecimal upperLimit = new BigDecimal("0.2");
+
+            if (interestRate.compareTo(lowerLimit) <= 0) {
+                super.setInterestRate(lowerLimit);
+            } else if (interestRate.compareTo(upperLimit) >= 1) {
+                super.setInterestRate(upperLimit);
+            } else {
+                super.setInterestRate(interestRate);
+            }
         }
     }
 
     public void setCreditLimit(Money creditLimit) {
-        BigDecimal lowerLimit = new BigDecimal("100");
-        BigDecimal upperLimit = new BigDecimal("100000");
-        BigDecimal creditLimitAmount = creditLimit.getAmount();
-
-        if (creditLimitAmount.compareTo(lowerLimit) <= 0) {
-            this.creditLimit = new Money(lowerLimit);
-        } else if (creditLimitAmount.compareTo(upperLimit) >= 1) {
-            this.creditLimit = new Money(upperLimit);
+        Money defaultLimit = new Money(new BigDecimal("100.00"));
+        if (creditLimit == null) {
+            this.creditLimit = defaultLimit;
         } else {
-            this.creditLimit = creditLimit;
+            BigDecimal lowerLimit = new BigDecimal("100.00");
+            BigDecimal upperLimit = new BigDecimal("100000.00");
+            BigDecimal creditLimitAmount = creditLimit.getAmount();
+
+            if (creditLimitAmount.compareTo(lowerLimit) <= 0) {
+                this.creditLimit = new Money(lowerLimit);
+            } else if (creditLimitAmount.compareTo(upperLimit) >= 1) {
+                this.creditLimit = new Money(upperLimit);
+            } else {
+                this.creditLimit = creditLimit;
+            }
         }
     }
 
 
     //methods
+    @Override
     public void applyInterestIfApplicable() {
         LocalDate currentDate = LocalDate.now();
-        int monthsSinceLastInterestApplied = Period.between(this.getLastDateInterestApplied(), currentDate).getMonths();
+        int daysInterestOverdue = Period.between(currentDate, super.getDateInterestDue()).getDays();
         //if interest hasn't been applied in over a year
-        if (monthsSinceLastInterestApplied >= 1) {
+        if (daysInterestOverdue >= 0) {
             BigDecimal balanceAmount = super.getBalance().getAmount(); //get current balance
             BigDecimal monthlyInterestRate = this.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
             BigDecimal interestAmount = balanceAmount.multiply(monthlyInterestRate); //calculate interest to be added
             BigDecimal newBalanceAmount = balanceAmount.add(interestAmount); //calculate new balance
             super.setBalance(new Money(newBalanceAmount));
-            lastDateInterestApplied = LocalDate.now();
+            super.setDateInterestDue(LocalDate.now().plusYears(1));
         }
     }
 

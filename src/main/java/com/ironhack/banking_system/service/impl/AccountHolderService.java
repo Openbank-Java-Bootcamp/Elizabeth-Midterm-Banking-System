@@ -6,16 +6,10 @@ import com.ironhack.banking_system.service.interfaces.AccountHolderServiceInterf
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +25,7 @@ public class AccountHolderService implements AccountHolderServiceInterface {
 
 
     public AccountHolder getAccountHolderById(Long id) {
-        Optional<AccountHolder> foundAccountHolder = accountHolderRepository.findById(id);
-        if (foundAccountHolder.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No Account Holder with that ID");
-        } else {
-            return foundAccountHolder.get();
-        }
+        return accountHolderRepository.findById(id).get();
     }
 
     public AccountHolder saveAccountHolder(AccountHolder accountHolder) {

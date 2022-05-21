@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,11 +20,11 @@ class StudentCheckingTest {
                 "Dennis Menace",
                 "DennisM",
                 "rascal42",
-                2000, 8,20,
+                LocalDate.of(2000,8,20),
                 new Address("86 Windy Lane", "London", "UK", "83745")
         );
 
-        studentChecking1 = new StudentChecking(accountHolder1, new Money(BigDecimal.valueOf(200)), "secretkey3");
+        studentChecking1 = new StudentChecking(new Money(BigDecimal.valueOf(200)), "secretkey3", accountHolder1);
     }
 
     @Test
