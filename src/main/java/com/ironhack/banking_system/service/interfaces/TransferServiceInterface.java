@@ -8,11 +8,9 @@ import com.ironhack.banking_system.model.ThirdPartyTransfer;
 
 public interface TransferServiceInterface {
 
-    //public InternalTransfer saveInternalTransfer(TransferDTO transferDTO);
-    //public InternalTransfer saveInternalTransfer(Long originAccountId, TransferDTO transferDTO);
-    public InternalTransfer saveInternalTransfer(TransferDTO transferDTO);
+    InternalTransfer saveInternalTransfer(TransferDTO transferDTO);
 
-    public ThirdPartyTransfer saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
+    ThirdPartyTransfer saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
 
-    public ThirdPartyTransfer saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
+    ThirdPartyTransfer saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
 }

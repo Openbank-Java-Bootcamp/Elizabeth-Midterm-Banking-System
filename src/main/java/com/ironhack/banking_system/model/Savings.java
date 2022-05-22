@@ -22,52 +22,6 @@ public class Savings extends Account{
 
 
     //CONSTRUCTORS
-    //all default options
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner) {
-//        super(balance, secretKey, primaryOwner);
-//        this.setMinimumBalance(new Money(BigDecimal.valueOf(1000)));
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        this.setInterestRate(new BigDecimal(".0025"));
-//    }
-//
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        this.setMinimumBalance(new Money(BigDecimal.valueOf(1000)));
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        this.setInterestRate(new BigDecimal(".0025"));
-//    }
-//
-//    //custom interestRate and default minimumBalance
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, BigDecimal interestRate) {
-//        super(balance, secretKey, primaryOwner);
-//        this.setMinimumBalance(new Money(BigDecimal.valueOf(1000)));
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        this.setInterestRate(interestRate);
-//    }
-//
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal interestRate) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        this.setMinimumBalance(new Money(BigDecimal.valueOf(1000)));
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        this.setInterestRate(interestRate);
-//    }
-//
-//    //default interestRate and custom minimumBalance
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, Money minimumBalance) {
-//        super(balance, secretKey, primaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        super.setInterestRate(new BigDecimal(".0025"));
-//        this.setMinimumBalance(minimumBalance);
-//    }
-//
-//    public Savings(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money minimumBalance) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusYears(1));
-//        super.setInterestRate(new BigDecimal(".0025"));
-//        this.setMinimumBalance(minimumBalance);
-//    }
-//
-    //custom minimumBalance and interestRate
     public Savings(Money balance, String secretKey, AccountHolder primaryOwner, Money minimumBalance, BigDecimal interestRate) {
         super(balance, secretKey, primaryOwner);
         super.setDateInterestDue(super.getCreationDate().plusYears(1));
@@ -83,7 +37,7 @@ public class Savings extends Account{
     }
 
 
-    //setters for minimumBalance and interestRate
+    //CUSTOM SETTERS
     @Override
     public void setMinimumBalance(Money minimumBalance) {
         Money defaultMinimum = new Money(BigDecimal.valueOf(1000));

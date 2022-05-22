@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class RoleService implements RoleServiceInterface {
 
     @Autowired
@@ -23,7 +22,6 @@ public class RoleService implements RoleServiceInterface {
 
 
     public Role saveRole(Role role) {
-        log.info("Saving a new role {} to the database", role.getName());
         return roleRepository.save(role);
     }
 

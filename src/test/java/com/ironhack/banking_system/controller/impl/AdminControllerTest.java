@@ -47,7 +47,7 @@ class AdminControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-        List<Admin> Admins = adminRepository.saveAll(
+        List<Admin> Admins = userRepository.saveAll(
                 List.of(
                         new Admin("Clarence Thomas", "CThomas", "password1"),
                         new Admin("Sadie Hawkins", "SHawkins", "password2")
@@ -57,7 +57,7 @@ class AdminControllerTest {
 
     @AfterEach
     void tearDown() {
-        adminRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 
@@ -67,7 +67,6 @@ class AdminControllerTest {
         mockMvc.perform(post("/bank/admins").content(body)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
     }
-
 
 
     @Test

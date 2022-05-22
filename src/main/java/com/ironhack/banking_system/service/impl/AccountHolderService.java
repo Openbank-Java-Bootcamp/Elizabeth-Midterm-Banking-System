@@ -26,6 +26,9 @@ public class AccountHolderService implements AccountHolderServiceInterface {
     private UserRepository userRepository;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -39,31 +42,15 @@ public class AccountHolderService implements AccountHolderServiceInterface {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
         accountHolder.setPassword(passwordEncoder.encode(accountHolder.getPassword()));
-        return accountHolderRepository.save(accountHolder);
+        userRepository.save(accountHolder);
+        roleService.addRoleToUser(accountHolder.getUsername(), "ROLE_USER");
+        return accountHolder;
     }
 
     public List<AccountHolder> getAccountHolders() {
         log.info("Fetching all account holders");
         return accountHolderRepository.findAll();
     }
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        //return null;
-//        User user = userRepository.findByUsername(username);
-//        if (user == null) {
-//            log.error("User not found in the database");
-//            throw new UsernameNotFoundException("User not found in the database");
-//        } else {
-//            log.info("User is found in the database: {}", username);
-//            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//            user.getRoles().forEach(role -> {
-//                authorities.add(new SimpleGrantedAuthority(role.getName()));
-//            });
-//            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
-//        }
-//
-//    }
 
 
 }

@@ -9,5 +9,5 @@ public interface AdminServiceInterface {
     Admin saveAdmin(Admin admin);
     List<Admin> getAdmins();
 
-    public void deleteAdmin(Long id);
+    void deleteAdmin(Long id);
 }

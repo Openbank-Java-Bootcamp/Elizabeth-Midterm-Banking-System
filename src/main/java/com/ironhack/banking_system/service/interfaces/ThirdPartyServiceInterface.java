@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ThirdPartyServiceInterface {
 
-    public ThirdParty saveThirdParty(ThirdParty thirdParty);
+    ThirdParty saveThirdParty(ThirdParty thirdParty);
 
 }

@@ -9,5 +9,5 @@ public interface AdminControllerInterface {
     List<Admin> getAdmins();
     void saveAdmin(Admin admin);
 
-    public void deleteAdmin(Long id);
+    void deleteAdmin(Long id);
 }

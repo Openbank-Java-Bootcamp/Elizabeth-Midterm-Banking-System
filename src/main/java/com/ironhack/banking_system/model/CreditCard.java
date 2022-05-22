@@ -26,50 +26,8 @@ public class CreditCard extends Account{
     private Money creditLimit = new Money(new BigDecimal("100"));
 
 
-    //CONSTRUCTORS
-    //default
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner) {
-//        super(balance, secretKey, primaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(BigDecimal.valueOf(.2));
-//    }
-//
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(BigDecimal.valueOf(.2));
-//    }
-//
-//
-//    //custom creditLimit and default interestRate
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, Money creditLimit) {
-//        super(balance, secretKey, primaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(BigDecimal.valueOf(.2));
-//        setCreditLimit(creditLimit);
-//    }
-//
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money creditLimit) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(BigDecimal.valueOf(.2));
-//        setCreditLimit(creditLimit);
-//    }
-//
-//    //default creditLimit and custom interestRate
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, BigDecimal interestRate) {
-//        super(balance, secretKey, primaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(interestRate);
-//    }
-//
-//    public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal interestRate) {
-//        super(balance, secretKey, primaryOwner, secondaryOwner);
-//        super.setDateInterestDue(super.getCreationDate().plusMonths(1));
-//        super.setInterestRate(interestRate);
-//    }
 
-    //custom creditLimit and custom interestRate
+    //CONSTRUCTORS
     public CreditCard(Money balance, String secretKey, AccountHolder primaryOwner, BigDecimal interestRate, Money creditLimit) {
         super(balance, secretKey, primaryOwner);
         super.setDateInterestDue(super.getCreationDate().plusMonths(1));
@@ -85,11 +43,7 @@ public class CreditCard extends Account{
     }
 
 
-
-
-
-
-    //setter for interestRate and creditLimit
+    //custom setters
     @Override
     public void setInterestRate(BigDecimal interestRate) {
         BigDecimal defaultRate = new BigDecimal("0.2");
@@ -129,7 +83,7 @@ public class CreditCard extends Account{
     }
 
 
-    //methods
+    //METHODS
     @Override
     public void applyInterestIfApplicable() {
         LocalDate currentDate = LocalDate.now();

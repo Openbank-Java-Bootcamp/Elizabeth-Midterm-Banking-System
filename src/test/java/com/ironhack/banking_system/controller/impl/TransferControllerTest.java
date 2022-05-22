@@ -236,8 +236,6 @@ class TransferControllerTest {
         assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
     }
 
-
-
     @Test
     void saveTransferToThirdParty_ValidData_Created() throws Exception {
         Money funds = new Money(BigDecimal.valueOf(25));

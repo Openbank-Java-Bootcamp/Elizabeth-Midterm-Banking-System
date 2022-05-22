@@ -27,7 +27,6 @@ public class Checking extends Account{
 
     //CONSTRUCTORS
 
-
     public Checking(Money balance, String secretKey, AccountHolder primaryOwner) {
         super(balance, secretKey, primaryOwner);
         super.setMinimumBalance(new Money(BigDecimal.valueOf(250)));
@@ -38,31 +37,5 @@ public class Checking extends Account{
         super.setMinimumBalance(new Money(BigDecimal.valueOf(250)));
     }
 
-    //methods
-//    public void applyPenaltyFeeIfApplicable() {
-//        BigDecimal balanceAmount = super.getBalance().getAmount();
-//        if (balanceAmount.compareTo(super.getMinimumBalance().getAmount()) < 0) {
-//            BigDecimal penaltyFeeAmount = super.getPenaltyFee().getAmount();
-//            super.setBalance(new Money(balanceAmount.subtract(penaltyFeeAmount)));
-//        }
-//    }
 
-//    @Override //override as penalty fee added
-//    public void debitAccount(Money debit) {
-//        BigDecimal debitAmount = debit.getAmount();
-//        BigDecimal currentBalanceAmount = this.getBalance().getAmount();
-//        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
-//            throw new IllegalArgumentException("Insufficient Funds");
-//        } else {
-//            BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
-//
-//            BigDecimal minimumBalanceAmount = this.getMinimumBalance().getAmount();
-//            if ((currentBalanceAmount.compareTo(minimumBalanceAmount) >= 0)
-//                    && (newBalanceAmount.compareTo(minimumBalanceAmount) < 0)) {
-//                BigDecimal penaltyFeeAmount = this.getPenaltyFee().getAmount();
-//                newBalanceAmount = newBalanceAmount.subtract(penaltyFeeAmount);
-//            }
-//            this.setBalance(new Money(newBalanceAmount));
-//        }
-//    }
 }

@@ -19,7 +19,6 @@ public class StudentChecking extends Checking{
 
 
     //CONSTRUCTORS
-
     public StudentChecking(Money balance, String secretKey, AccountHolder primaryOwner) {
         super(balance, secretKey, primaryOwner);
         super.setMinimumBalance(null);

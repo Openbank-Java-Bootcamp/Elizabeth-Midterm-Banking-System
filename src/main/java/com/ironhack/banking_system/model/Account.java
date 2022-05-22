@@ -72,10 +72,6 @@ public abstract class Account {
 
 
 
-//    private List<Transfer> transfersSent;
-//
-//    private List<Transfer> transfersReceived;
-
 
     //CONSTRUCTORS
     public Account(Money balance, String secretKey, AccountHolder primaryOwner) {

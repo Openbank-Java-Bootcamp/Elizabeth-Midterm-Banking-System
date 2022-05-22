@@ -24,6 +24,9 @@ public class AdminService implements AdminServiceInterface {
     private UserRepository userRepository;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -33,7 +36,9 @@ public class AdminService implements AdminServiceInterface {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
         }
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        return adminRepository.save(admin);
+        adminRepository.save(admin);
+        roleService.addRoleToUser(admin.getUsername(), "ROLE_ADMIN");
+        return admin;
     }
 
     public List<Admin> getAdmins() {

@@ -59,7 +59,7 @@ class SavingsTest {
     @Test
     void setInterestRate_BelowLimit_0() {
         savings1.setInterestRate(new BigDecimal(-1));
-        assertEquals(new BigDecimal(0), savings1.getInterestRate());
+        assertEquals(new BigDecimal("0.0"), savings1.getInterestRate());
     }
 
     @Test

@@ -12,10 +12,10 @@ public interface AccountServiceInterface {
 
     Account saveAccount(AccountDTO accountDTO);
 
-    public Account getAccount(Long id);
+    Account getAccount(Long id);
 
-    public Money getAccountBalance(Long accountId);
+    Money getAccountBalance(Long accountId);
 
-    public void updateAccountBalance(Long accountId, AccountBalanceOnlyDTO accountBalanceOnlyDTO);
+    void updateAccountBalance(Long accountId, AccountBalanceOnlyDTO accountBalanceOnlyDTO);
 
 }

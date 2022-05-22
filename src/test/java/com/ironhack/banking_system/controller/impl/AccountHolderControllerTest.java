@@ -9,6 +9,7 @@ import com.ironhack.banking_system.model.AccountHolder;
 import com.ironhack.banking_system.model.Address;
 import com.ironhack.banking_system.model.Admin;
 import com.ironhack.banking_system.repository.AccountHolderRepository;
+import com.ironhack.banking_system.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class AccountHolderControllerTest {
     @Autowired
     private AccountHolderRepository accountHolderRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
@@ -47,7 +51,7 @@ class AccountHolderControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        List<AccountHolder> AccountHolders = accountHolderRepository.saveAll(
+        List<AccountHolder> AccountHolders = userRepository.saveAll(
                 List.of(
                         new AccountHolder(
                                 "Marjorie Stewart-Baxter",
@@ -70,7 +74,7 @@ class AccountHolderControllerTest {
 
     @AfterEach
     void tearDown() {
-        accountHolderRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
 
@@ -81,13 +85,6 @@ class AccountHolderControllerTest {
         MvcResult result = mockMvc.perform(get("/bank/accountholders/1"))
                 .andExpect(status().isOk()).andReturn();
         assertTrue(result.getResponse().getContentAsString().contains("Marjorie"));
-    }
-
-    @Test
-    void getAccountHolderById_InvalidId_BadRequest() throws Exception {
-        MvcResult result = mockMvc.perform(get("/bank/accountholders/10"))
-                .andExpect(status().isBadRequest()).andReturn();
-
     }
 
     @Test

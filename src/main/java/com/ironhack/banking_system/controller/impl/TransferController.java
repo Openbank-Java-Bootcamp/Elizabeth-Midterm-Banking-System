@@ -3,7 +3,6 @@ package com.ironhack.banking_system.controller.impl;
 import com.ironhack.banking_system.DTO.TransferDTO;
 import com.ironhack.banking_system.DTO.TransferThirdPartyDTO;
 import com.ironhack.banking_system.controller.interfaces.TransferControllerInterface;
-import com.ironhack.banking_system.model.Transfer;
 import com.ironhack.banking_system.service.interfaces.TransferServiceInterface;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

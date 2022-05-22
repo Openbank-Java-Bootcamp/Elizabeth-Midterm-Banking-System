@@ -3,7 +3,6 @@ package com.ironhack.banking_system.controller.impl;
 import com.ironhack.banking_system.DTO.AccountBalanceOnlyDTO;
 import com.ironhack.banking_system.DTO.AccountDTO;
 import com.ironhack.banking_system.controller.interfaces.AccountControllerInterface;
-import com.ironhack.banking_system.enums.AccountType;
 import com.ironhack.banking_system.model.Account;
 import com.ironhack.banking_system.model.Money;
 import com.ironhack.banking_system.service.interfaces.AccountServiceInterface;
