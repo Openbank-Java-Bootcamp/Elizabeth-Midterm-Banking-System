@@ -145,12 +145,15 @@ public class CreditCard extends Account{
         }
     }
 
-    @Override //need to override as balance on creditCard account is opposite other accounts
+    @Override //need to override as balance on creditCard account is opposite of the other accounts
     public void debitAccount(Money funds) {
         BigDecimal debitAmount = funds.getAmount();
+        //apply interest if applicable
+        applyInterestIfApplicable();
         BigDecimal currentBalanceAmount = this.getBalance().getAmount();
         BigDecimal newBalanceAmount = currentBalanceAmount.add(debitAmount);
         BigDecimal creditLimitAmount = this.getCreditLimit().getAmount();
+        //check if debit will put balance above credit limit and deny if so
         if (newBalanceAmount.compareTo(creditLimitAmount) > 0) {
             throw new IllegalArgumentException("Amount exceeds credit limit.");
         } else {
@@ -158,11 +161,11 @@ public class CreditCard extends Account{
         }
     }
 
-    @Override //need to override as balance on creditCard account is opposite other accounts
+    @Override //need to override as balance on creditCard account is opposite of the other accounts
     public void creditAccount(Money funds) {
         BigDecimal creditAmount = funds.getAmount();
         BigDecimal currentBalanceAmount = this.getBalance().getAmount();
-        BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(creditAmount);
+        BigDecimal newBalanceAmount = currentBalanceAmount.subtract(creditAmount);
         this.setBalance(new Money(newBalanceAmount));
     }
 

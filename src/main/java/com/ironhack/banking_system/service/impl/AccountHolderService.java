@@ -1,7 +1,9 @@
 package com.ironhack.banking_system.service.impl;
 
 import com.ironhack.banking_system.model.AccountHolder;
+import com.ironhack.banking_system.model.User;
 import com.ironhack.banking_system.repository.AccountHolderRepository;
+import com.ironhack.banking_system.repository.UserRepository;
 import com.ironhack.banking_system.service.interfaces.AccountHolderServiceInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class AccountHolderService implements AccountHolderServiceInterface {
     private AccountHolderRepository accountHolderRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
 
@@ -29,7 +34,10 @@ public class AccountHolderService implements AccountHolderServiceInterface {
     }
 
     public AccountHolder saveAccountHolder(AccountHolder accountHolder) {
-        log.info("Saving new account holder {} inside of the database", accountHolder.getName());
+        User foundUser = userRepository.findByUsername(accountHolder.getUsername());
+        if (foundUser != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
+        }
         accountHolder.setPassword(passwordEncoder.encode(accountHolder.getPassword()));
         return accountHolderRepository.save(accountHolder);
     }

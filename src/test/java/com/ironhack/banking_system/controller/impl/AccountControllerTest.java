@@ -170,10 +170,19 @@ class AccountControllerTest {
     }
 
     @Test
-    void updateAccountBalance() throws Exception {
-        String body = objectMapper.writeValueAsString(new AccountBalanceOnlyDTO(new Money(new BigDecimal("800"))));
-        mockMvc.perform(patch("/bank/accounts/balance/1").content(body)
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
-        assertEquals(new Money(new BigDecimal("800")),accountRepository.findById(1L).get().getBalance());
+    void getAccountBalance() throws Exception {
+        MvcResult result = mockMvc.perform(get("/bank/balance/1"))
+                .andExpect(status().isOk()).andReturn();
+        assertTrue(result.getResponse().getContentAsString().contains("500"));
     }
+
+    @Test
+    void updateAccountBalance() throws Exception {
+        String body = objectMapper.writeValueAsString(new AccountBalanceOnlyDTO(new Money(new BigDecimal("800.00"))));
+        mockMvc.perform(patch("/bank/balance/1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+        assertEquals(new BigDecimal("800.00"),accountRepository.findById(1L).get().getBalance().getAmount());
+    }
+
+
 }

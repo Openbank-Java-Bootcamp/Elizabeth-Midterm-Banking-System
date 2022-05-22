@@ -21,7 +21,7 @@ public class Checking extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "monthly_maintenance_fee_currency")),
             @AttributeOverride(name = "amount", column = @Column(name = "monthly_maintenance_fee_amount"))
     })
-    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"), getInstance("USD"));
+    private Money monthlyMaintenanceFee = new Money(new BigDecimal("12"));
 
 
 

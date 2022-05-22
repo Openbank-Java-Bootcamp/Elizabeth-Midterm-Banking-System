@@ -7,8 +7,6 @@ import com.ironhack.banking_system.model.*;
 import com.ironhack.banking_system.repository.AccountHolderRepository;
 import com.ironhack.banking_system.repository.AccountRepository;
 import com.ironhack.banking_system.service.interfaces.AccountServiceInterface;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class AccountService implements AccountServiceInterface {
 
     @Autowired
@@ -97,7 +94,31 @@ public class AccountService implements AccountServiceInterface {
 
 
     public Account getAccount(Long id) {
-        return accountRepository.findById(id).get();
+        Optional<Account> account = accountRepository.findById(id);
+        if (account.get() instanceof CreditCard) {
+            ((CreditCard) account.get()).applyInterestIfApplicable();
+            return accountRepository.save(account.get());
+        } else if (account.get() instanceof Savings ){
+            ((Savings) account.get()).applyInterestIfApplicable();
+            return accountRepository.save(account.get());
+        } else {
+            return account.get();
+        }
+    }
+
+    public Money getAccountBalance(Long accountId) {
+        Optional<Account> account = accountRepository.findById(accountId);
+        if (account.get() instanceof CreditCard) {
+            ((CreditCard) account.get()).applyInterestIfApplicable();
+            accountRepository.save(account.get());
+            return account.get().getBalance();
+        } else if (account.get() instanceof Savings ){
+            ((Savings) account.get()).applyInterestIfApplicable();
+            accountRepository.save(account.get());
+            return account.get().getBalance();
+        } else {
+            return account.get().getBalance();
+        }
     }
 
     public void updateAccountBalance(Long accountId, AccountBalanceOnlyDTO accountBalanceOnlyDTO) {
@@ -106,50 +127,4 @@ public class AccountService implements AccountServiceInterface {
         accountRepository.save(account);
     }
 
-
-
-//    Account saveAccount(AccountHolder primaryAccountHolder, Optional<AccountHolder> secondaryAccountHolder, String accountType, String secretKey) {
-//        if (accountType.toUpperCase().equals("CHECKING")) {
-//            if (primaryAccountHolder.calculateAge() <24) {
-//                Account newStudentChecking = new StudentChecking(primaryAccountHolder, secondaryAccountHolder.get(), secretKey);
-//                accountRepository.save(newStudentChecking);
-//                return newStudentChecking;
-//            } else {
-//                Account newChecking = new Checking(primaryAccountHolder, secondaryAccountHolder.get(), secretKey);
-//                accountRepository.save(newChecking);
-//                return newChecking;
-//            }
-//        } else if (accountType.toUpperCase().equals("SAVINGS")) {
-//            Account newSavings = new Savings(primaryAccountHolder, secondaryAccountHolder.get(), secretKey);
-//            accountRepository.save(newSavings);
-//            return newSavings;
-//        } else if (accountType.toUpperCase().equals("CREDITCARD")) {
-//            Account newCreditCard = new CreditCard(primaryAccountHolder, secondaryAccountHolder.get());
-//            accountRepository.save(newCreditCard);
-//            return newCreditCard;
-//        } else {
-//
-//        }
-//    }
-
-//    Account saveAccount(Account account, String accountType) {
-//        Optional<AccountHolder> foundPrimaryOwner = accountHolderRepository.findById(account.getPrimaryOwner().getId());
-//        if(foundPrimaryOwner.isEmpty()){
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid primary owner.");
-//        }
-//        try {
-//            if (accountType.toUpperCase().equals("CHECKING")) {
-//                if (foundPrimaryOwner.get().calculateAge() < 24) {
-//                    return accountRepository.save(new StudentChecking(
-//                           account.getPrimaryOwner(),
-//                            account.getSecondaryOwner(),
-//                            account.getSecretKey
-//                    ))
-//                }
-//
-//            }
-//
-//
-//        }
-//    }
 }

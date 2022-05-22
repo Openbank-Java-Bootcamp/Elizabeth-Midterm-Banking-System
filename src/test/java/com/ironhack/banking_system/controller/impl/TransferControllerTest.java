@@ -3,6 +3,7 @@ package com.ironhack.banking_system.controller.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ironhack.banking_system.DTO.TransferDTO;
+import com.ironhack.banking_system.DTO.TransferThirdPartyDTO;
 import com.ironhack.banking_system.model.*;
 import com.ironhack.banking_system.repository.AccountHolderRepository;
 import com.ironhack.banking_system.repository.AccountRepository;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -21,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,6 +44,9 @@ class TransferControllerTest {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private ThirdPartyRepository thirdPartyRepository;
+
     private MockMvc mockMvc;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -54,6 +60,7 @@ class TransferControllerTest {
     private AccountHolder accountHolder7;
     private AccountHolder accountHolder8;
     private Checking checkingAccount;
+    private Checking checking2;
     private StudentChecking studentCheckingAccount;
     private Savings savingsAccount;
     private CreditCard creditCardAccount;
@@ -81,7 +88,7 @@ class TransferControllerTest {
         accountHolder5 = new AccountHolder("Maria Gomez", "MGomez", "password5",
                 LocalDate.of(1980, 3,2),
                 new Address("Gran Via 834", "Madrid", "Spain", "27341"));
-        accountHolder6 = new AccountHolder("Mario Lopez", "MLopez", "password 6",
+        accountHolder6 = new AccountHolder("Mario Lopez", "MLopez", "password6",
                 LocalDate.of(1978, 9, 14),
                 new Address("Gran Via 834", "Madrid", "Spain", "27341"));
 
@@ -92,9 +99,13 @@ class TransferControllerTest {
         checkingAccount = new Checking(new Money(BigDecimal.valueOf(300)), "secretKey1", accountHolder1, accountHolder2);
         studentCheckingAccount= new StudentChecking(new Money(BigDecimal.valueOf(100)), "secretKey2", accountHolder3, accountHolder4);
         savingsAccount= new Savings(new Money(BigDecimal.valueOf(1500)), "secretKey3", accountHolder5, accountHolder6, null, null);
-        creditCardAccount= new CreditCard(new Money(BigDecimal.valueOf(0)), "secretKey4", accountHolder5, accountHolder6, null, null);
+        creditCardAccount= new CreditCard(new Money(BigDecimal.valueOf(75)), "secretKey4", accountHolder5, accountHolder6, null, null);
+        checking2 = new Checking(new Money(BigDecimal.valueOf(300)), "secretKey1", accountHolder1);
 
         accountRepository.saveAll(List.of(checkingAccount, studentCheckingAccount, savingsAccount, creditCardAccount));
+
+        //make a third party
+        thirdPartyRepository.save(new ThirdParty("Other Bank", "hashedKey1"));
     }
 
     @AfterEach
@@ -105,30 +116,196 @@ class TransferControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "MJB1972", password = "catlady7", roles="USER")
     void saveTransfer_ValidData_Created() throws Exception {
         Money funds = new Money(BigDecimal.valueOf(25));
         Money originalOriginAccountBalance = checkingAccount.getBalance();
         Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
-        String body = objectMapper.writeValueAsString(new TransferDTO(
-                funds,
-                "Greg Winston",
-                2L));
+        String body = objectMapper.writeValueAsString(new TransferDTO(1L, funds, "Greg Winston", 2L));
         //transfer object is saved
-        mockMvc.perform(post("/bank/transfers/internaltransfers/1").content(body)
+        mockMvc.perform(post("/bank/transfers").content(body)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
         //receiving account balance increased by fund amount
-        Money currentDestinationAccountBalance = studentCheckingAccount.getBalance();
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
         assertEquals(originalDestinationAccountBalance.getAmount().add(funds.getAmount()), currentDestinationAccountBalance.getAmount());
         //sending account balance decreased by fund amount
-        Money currentOriginAccountBalance = checkingAccount.getBalance();
+        Money currentOriginAccountBalance = accountRepository.findById(1L).get().getBalance();
+        assertEquals(originalOriginAccountBalance.getAmount().subtract(funds.getAmount()), currentOriginAccountBalance.getAmount());
+    }
+
+
+
+    @Test
+    @WithMockUser(username = "MLopez", password = "password6", roles="USER")
+    void saveTransfer_ToCreditCard_Created() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        Money originalOriginAccountBalance = savingsAccount.getBalance();
+        Money originalDestinationAccountBalance = creditCardAccount.getBalance();
+        String body = objectMapper.writeValueAsString(new TransferDTO(3L, funds,
+                "Maria Gomez", 4L));
+        //transfer object is saved
+        mockMvc.perform(post("/bank/transfers").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+        //receiving CreditCard account balance decreased by fund amount
+        Money currentDestinationAccountBalance = accountRepository.findById(4L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount().subtract(funds.getAmount()), currentDestinationAccountBalance.getAmount());
+        //sending account balance decreased by fund amount
+        Money currentOriginAccountBalance = accountRepository.findById(3L).get().getBalance();
         assertEquals(originalOriginAccountBalance.getAmount().subtract(funds.getAmount()), currentOriginAccountBalance.getAmount());
     }
 
     @Test
-    void saveTransferFromThirdParty() {
+    @WithMockUser(username = "MJB1972", password = "catlady7", roles="USER")
+    void saveTransfer_WrongName_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        Money originalOriginAccountBalance = checkingAccount.getBalance();
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        String body = objectMapper.writeValueAsString(new TransferDTO(1L, funds,
+                "Harry Potter", 2L));
+        //transfer object is saved
+        mockMvc.perform(post("/bank/transfers").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
     @Test
-    void saveTransferToThirdParty() {
+    @WithMockUser(username = "MJB1972", password = "catlady7", roles="USER")
+    void saveTransfer_WrongSendingAccount_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        Money originalOriginAccountBalance = checkingAccount.getBalance();
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+
+        String body = objectMapper.writeValueAsString(new TransferDTO(4L, funds,
+                "Harry Potter", 2L));
+        mockMvc.perform(post("/bank/transfers").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
     }
+
+    @Test
+    void saveTransferFromThirdParty_ValidData_Created() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using account 2L
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "secretKey2"));
+        mockMvc.perform(post("/bank/fromthirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+        //funds credited to account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount().add(funds.getAmount()), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferFromThirdParty_InvalidHashedKey_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using account 2L
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //throws bad request
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "secretKey2"));
+        mockMvc.perform(post("/bank/fromthirdparty/hashedKey2").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds added to account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferFromThirdParty_InvalidSecretKey_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using account 2L
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //throws bad request
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "wrongSecretKey"));
+        mockMvc.perform(post("/bank/fromthirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds added to account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferFromThirdParty_InvalidAccount_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using account 2L
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //throws bad request
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 15L, "secretKey2"));
+        mockMvc.perform(post("/bank/fromthirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds added to account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+
+
+    @Test
+    void saveTransferToThirdParty_ValidData_Created() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using account 2L
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "secretKey2"));
+        mockMvc.perform(post("/bank/tothirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+        //funds debited from account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount().subtract(funds.getAmount()), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferToThirdParty_InsufficientFunds_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(150));
+        //using StudentChecking account with balance of only 100
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "secretKey2"));
+        mockMvc.perform(post("/bank/tothirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds debited from account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferToThirdParty_InvalidHashedKey_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using StudentChecking account with balance of only 100
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "secretKey2"));
+        mockMvc.perform(post("/bank/tothirdparty/hashedKey2").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds debited from account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferToThirdParty_InvalidSecretKey_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using StudentChecking account with balance of only 100
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 2L, "wrongSecretKey"));
+        mockMvc.perform(post("/bank/tothirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds debited from account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
+    @Test
+    void saveTransferToThirdParty_InvalidAccount_Throws() throws Exception {
+        Money funds = new Money(BigDecimal.valueOf(25));
+        //using StudentChecking account with balance of only 100
+        Money originalDestinationAccountBalance = studentCheckingAccount.getBalance();
+        //transfer created
+        String body = objectMapper.writeValueAsString(new TransferThirdPartyDTO(funds, 15L, "secretKey2"));
+        mockMvc.perform(post("/bank/tothirdparty/hashedKey1").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+        //no funds debited from account
+        Money currentDestinationAccountBalance = accountRepository.findById(2L).get().getBalance();
+        assertEquals(originalDestinationAccountBalance.getAmount(), currentDestinationAccountBalance.getAmount());
+    }
+
 }

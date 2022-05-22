@@ -100,12 +100,23 @@ class AccountHolderControllerTest {
 
     @Test
     void saveAccountHolder_ValidData_Created() throws Exception {
-        String body = objectMapper.writeValueAsString(new AccountHolder("Marjorie Stewart-Baxter",
-                "MJB1972",
-                "catlady7",
-                LocalDate.parse("1972-04-01"),
-                new Address("Alameda 46", "Madrid", "Spain", "28012")));
+        String body = objectMapper.writeValueAsString(new AccountHolder("Harry Potter",
+                "HPotter",
+                "magic",
+                LocalDate.parse("1997-04-01"),
+                new Address("Hogwarts Castle", "Hogsmeade", "Scotland", "99999")));
         mockMvc.perform(post("/bank/accountholders").content(body)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
+    }
+
+    @Test
+    void saveAccountHolder_DuplicateUsername_Throws() throws Exception {
+        String body = objectMapper.writeValueAsString(new AccountHolder("Michael J Bordan",
+                "MJB1972",
+                "bballer",
+                LocalDate.parse("1972-01-01"),
+                new Address("1234 Some Road", "Rome", "Italy", "94376")));
+        mockMvc.perform(post("/bank/accountholders").content(body)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 }

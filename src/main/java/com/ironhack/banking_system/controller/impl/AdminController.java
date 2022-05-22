@@ -28,4 +28,10 @@ public class AdminController implements AdminControllerInterface {
     public void saveAdmin(@RequestBody Admin admin) {
         adminService.saveAdmin(admin);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAdmin(@PathVariable Long id) {
+        adminService.deleteAdmin(id);
+    }
 }

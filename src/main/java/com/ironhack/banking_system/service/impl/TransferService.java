@@ -9,6 +9,8 @@ import com.ironhack.banking_system.repository.TransferRepository;
 import com.ironhack.banking_system.service.interfaces.TransferServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,119 +28,125 @@ public class TransferService implements TransferServiceInterface {
     @Autowired
     AccountRepository accountRepository;
 
+    //public InternalTransfer saveInternalTransfer(Long originAccountId,TransferDTO transferDTO) {
+    public InternalTransfer saveInternalTransfer(TransferDTO transferDTO) {
+        //get username from token
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String tokenUsername = "";
+        if (principal instanceof UserDetails) {
+            tokenUsername = ((UserDetails) principal).getUsername();
+        } else {
+            tokenUsername = principal.toString();
+        }
+        //find sending account
+        Optional<Account> originAccount = accountRepository.findById(transferDTO.getOriginAccountId());
+        if (originAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Sending Account");
+        }
+        //check if user is an account owner
+        String primaryUsername = originAccount.get().getPrimaryOwner().getUsername();
+        if (!tokenUsername.equals(primaryUsername)) {  //if primary username does not match token username
+            try {
+                String secondaryUsername = originAccount.get().getSecondaryOwner().getUsername();
+                if (!tokenUsername.equals(secondaryUsername)) { // if secondary owner exists and does not match token
+                   throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not an account owner of sending account");
+                }
+            } catch (NullPointerException e) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not an account owner of sending account");
+            }
+        }
+        //find receiving account
+        Long destinationId = transferDTO.getDestinationAccountId();
+        Optional<Account> destinationAccount = accountRepository.findById(destinationId);
+        if (destinationAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Receiving Account");
+        }
+        //check if name is one of receiving account's owners
+        String primaryName = destinationAccount.get().getPrimaryOwner().getName();
+        if (!transferDTO.getDestinationAccountOwner().equals(primaryName)) {
+            try {
+                String secondaryName = destinationAccount.get().getSecondaryOwner().getName();
+                if (!transferDTO.getDestinationAccountOwner().equals(secondaryName)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name on transfer does not match receiving account owner.");
+                }
+            } catch (NullPointerException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name on transfer does not match receiving account owner.");
+            }
+        }
+        //make transfer
+        try {
+            Money funds = transferDTO.getFunds();
+            originAccount.get().debitAccount(funds);
+            destinationAccount.get().creditAccount(funds);
+            accountRepository.save(originAccount.get());
+            accountRepository.save(destinationAccount.get());
+            return transferRepository.save(new InternalTransfer(funds, originAccount.get(), destinationAccount.get()));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient Funds");
+        }
+    }
 
-//    public Transfer saveTransfer(Long originAccountId, TransferDTO transferDTO) {
-//        //Long originAccountId = transferDTO.getOriginAccountId();
-//        Long destinationAccountId = transferDTO.getDestinationAccountId();
-//        Money funds = transferDTO.getFunds();
-//        Account originAccount = accountRepository.findById(originAccountId);
-//        if (originAccount == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Origin account does not exist");
-//        } else {
-//            Account destinationAccount = accountRepository.findById(destinationAccountId);
-//            if (destinationAccount == null) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Destination account does not exist");
-//            } else {
-//                String DTOName = transferDTO.getDestinationAccountOwner();
-//                String primaryOwnerName = destinationAccount.getPrimaryOwner().getName();
-//                String secondaryOwnerName = destinationAccount.getSecondaryOwner().getName();
-//                if (!DTOName.equals(primaryOwnerName) && !DTOName.equals(secondaryOwnerName)) {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name provided does not match owner of destination account.");
-//                } else {
-//                //downcast to specific account types
-//                //origin account:
-//                if (originAccount instanceof CreditCard) {
-//                    try {
-//                        ((CreditCard) originAccount).debitAccount(funds);
-//                    } catch (IllegalArgumentException e) {
-//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
-//                    }
-//                } else if (originAccount instanceof Checking) {
-//                    try {
-//                        ((Checking) originAccount).debitAccount(funds);
-//                    } catch (IllegalArgumentException e) {
-//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
-//                    }
-//                } else if (originAccount instanceof StudentChecking) {
-//                    try {
-//                        ((StudentChecking) originAccount).debitAccount(funds);
-//                    } catch (IllegalArgumentException e) {
-//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
-//                    }
-//                } else if (originAccount instanceof Savings) {
-//                    try {
-//                        ((Savings) originAccount).debitAccount(funds);
-//                    } catch (IllegalArgumentException e) {
-//                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
-//                    }
-//                } else {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account type not found");
-//                }
-//                //destination accounts:
-//                if (destinationAccount instanceof CreditCard) {
-//                    ((CreditCard) destinationAccount).creditAccount(funds);
-//
-//                } else if (destinationAccount instanceof Checking) {
-//                    ((Checking) destinationAccount).creditAccount(funds);
-//                } else if (destinationAccount instanceof StudentChecking) {
-//                    ((StudentChecking) destinationAccount).creditAccount(funds);
-//                } else if (destinationAccount instanceof Savings) {
-//                    ((Savings) destinationAccount).creditAccount(funds);
-//                } else {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account type not found");
-//                }
-//
-//                return transferRepository.save(new InternalTransfer(funds, originAccount, destinationAccount));
-//            }}
-//        }
-//    }
+    public ThirdPartyTransfer saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO) {
+        //check if third party is in database
+        ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
+        if (thirdParty == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Third Party not in database.");
+        }
+        //find account and match secret key
+        Long accountId = transferThirdPartyDTO.getAccountId();
+        Optional<Account> destinationAccount = accountRepository.findById(accountId);
+        if (destinationAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid account id");
+        }
+        if (!transferThirdPartyDTO.getAccountSecretKey().equals(destinationAccount.get().getSecretKey())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Secret key invalid.");
+        }
+        //credit account
+        Money funds = transferThirdPartyDTO.getFunds();
+        if (destinationAccount.get() instanceof CreditCard) {
+            ((CreditCard) destinationAccount.get()).creditAccount(funds);
+            accountRepository.save(destinationAccount.get());
+            return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, destinationAccount.get()));
+        } else {
+            destinationAccount.get().creditAccount(funds);
+            accountRepository.save(destinationAccount.get());
+            return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, destinationAccount.get()));
+        }
+    }
 
-//    public Transfer saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO) {
-//        ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
-//        if (thirdParty.getId() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Third Party not in database.");
-//        } else {
-//            Long accountId = transferThirdPartyDTO.getAccountId();
-//            Account destinationAccount = accountRepository.findById(accountId);
-//            if (!transferThirdPartyDTO.getAccountSecretKey().equals(destinationAccount.getSecretKey())) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Secret key invalid.");
-//            } else {
-//                Money funds = transferThirdPartyDTO.getFunds();
-//                if (destinationAccount instanceof CreditCard) {
-//                    ((CreditCard) destinationAccount).creditAccount(funds);
-//                } else if (destinationAccount instanceof Checking) {
-//                    ((Checking) destinationAccount).creditAccount(funds);
-//                } else if (destinationAccount instanceof StudentChecking) {
-//                    ((StudentChecking) destinationAccount).creditAccount(funds);
-//                } else if (destinationAccount instanceof Savings) {
-//                    ((Savings) destinationAccount).creditAccount(funds);
-//                } else {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account type not found");
-//                }
-//                return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, destinationAccount));
-//            }
-//        }
-//    }
 
-//    public Transfer saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO) {
-//        ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
-//        if (thirdParty.getId() == null) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Third Party not in database.");
-//        } else {
-//            Long accountId = transferThirdPartyDTO.getAccountId();
-//            Account originAccount = accountRepository.findById(accountId);
-//            if (!transferThirdPartyDTO.getAccountSecretKey().equals(originAccount.getSecretKey())) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Secret key invalid.");
-//            } else {
-//                Money funds = transferThirdPartyDTO.getFunds();
-//                try {
-//                    originAccount.debitAccount(funds);
-//                    accountRepository.save(originAccount);
-//                    return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, originAccount));
-//                } catch (IllegalArgumentException e) {
-//                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
-//                }
-//            }
-//        }
-//    }
+    public ThirdPartyTransfer saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO) {
+        //check if third party in database
+        ThirdParty thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
+        if (thirdParty == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Third Party not in database.");
+        }
+        //find account and match to secret key
+        Long accountId = transferThirdPartyDTO.getAccountId();
+        Optional<Account> originAccount = accountRepository.findById(accountId);
+        if (originAccount.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid account id");
+        }
+        if (!transferThirdPartyDTO.getAccountSecretKey().equals(originAccount.get().getSecretKey())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Secret key invalid.");
+        }
+        //debit account
+        Money funds = transferThirdPartyDTO.getFunds();
+        try {
+            if (originAccount.get() instanceof CreditCard) {
+                ((CreditCard) originAccount.get()).debitAccount(funds);
+                accountRepository.save(originAccount.get());
+                return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, originAccount.get()));
+            } else {
+                originAccount.get().debitAccount(funds);
+                accountRepository.save(originAccount.get());
+                return transferRepository.save(new ThirdPartyTransfer(funds, thirdParty, originAccount.get()));
+            }
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds.");
+        }
+    }
+
 }
+
+

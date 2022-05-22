@@ -10,21 +10,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/bank/users")
 public class UserController implements UserControllerInterface {
 
     @Autowired
     private UserServiceInterface userService;
 
-    @GetMapping("/users")
+
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<User> getUsers() {
         return userService.getUsers();
     }
 
-    @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void saveUser(@RequestBody User user) {
-        userService.saveUser(user);
-    }
 }

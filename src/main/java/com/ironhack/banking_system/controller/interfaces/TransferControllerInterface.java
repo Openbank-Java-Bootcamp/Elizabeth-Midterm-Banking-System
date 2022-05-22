@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface TransferControllerInterface {
 
-  //  public void saveTransfer(Long originAccountId, TransferDTO transferDTO);
+    public void saveInternalTransfer(TransferDTO transferDTO);
+    //public void saveInternalTransfer(Long originAccountId, TransferDTO transferDTO);
 
-  //  public void saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
 
-  //  public void saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
+    public void saveTransferFromThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
+
+    public void saveTransferToThirdParty(String hashedKey, TransferThirdPartyDTO transferThirdPartyDTO);
 }

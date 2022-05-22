@@ -86,21 +86,47 @@ class CreditCardTest {
     @Test
     void applyInterestIfApplicable_DueForInterest_InterestApplied() {
         creditCard1.setDateInterestDue(LocalDate.now().minusDays(1));
-        System.out.println(creditCard1.getInterestRate());
         BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
         BigDecimal monthlyInterestRate = creditCard1.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
         BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.multiply(monthlyInterestRate));
-        creditCard1.applyInterestIfApplicable();
 
+        creditCard1.applyInterestIfApplicable();
         assertEquals(expectedAmount.setScale(2), creditCard1.getBalance().getAmount());
     }
 
     @Test
     void applyInterestIfApplicable_NotDueForInterest_NoInterestApplied() {
+        BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
+        creditCard1.applyInterestIfApplicable();
+        assertEquals(originalBalanceAmount, creditCard1.getBalance().getAmount());
+    }
+
+    @Test
+    void debitAccount_InterestDue_InterestAndDebitApplied() {
+        creditCard1.setDateInterestDue(LocalDate.now().minusDays(1));
         creditCard1.applyInterestIfApplicable();
         BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
+        BigDecimal monthlyInterestRate = creditCard1.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
+        Money debitFunds = new Money(new BigDecimal("10.00"));
+        BigDecimal expectedAmount = originalBalanceAmount.add(originalBalanceAmount.add(debitFunds.getAmount()));
 
-        assertEquals(originalBalanceAmount, creditCard1.getBalance().getAmount());
+        creditCard1.debitAccount(debitFunds);
+        assertEquals(expectedAmount, creditCard1.getBalance().getAmount());
+
+    }
+
+    @Test
+    void creditAccount_InterestDue_InterestAndDebitApplied() {
+        creditCard1.setDateInterestDue(LocalDate.now().minusDays(1));
+        creditCard1.applyInterestIfApplicable();
+        BigDecimal originalBalanceAmount = creditCard1.getBalance().getAmount();
+        BigDecimal monthlyInterestRate = creditCard1.getInterestRate().divide(BigDecimal.valueOf(12), RoundingMode.HALF_EVEN);
+        Money creditFunds = new Money(new BigDecimal("10.00"));
+        BigDecimal expectedAmount = originalBalanceAmount.subtract(originalBalanceAmount.add(creditFunds.getAmount()));
+
+        creditCard1.creditAccount(creditFunds);
+        assertEquals(expectedAmount, creditCard1.getBalance().getAmount());
+
     }
 
 }

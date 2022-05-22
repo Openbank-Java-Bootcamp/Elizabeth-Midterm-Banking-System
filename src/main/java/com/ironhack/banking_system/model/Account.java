@@ -2,8 +2,6 @@ package com.ironhack.banking_system.model;
 
 import com.ironhack.banking_system.enums.AccountStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,19 +9,14 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
 
-import static java.util.Currency.*;
 
 
 @Data
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "account_type")
 public abstract class Account {
 
     @Id
@@ -74,6 +67,7 @@ public abstract class Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
+    @Column(name = "date_interest_due")
     private LocalDate dateInterestDue;
 
 
@@ -131,12 +125,16 @@ public abstract class Account {
 
     public void debitAccount(Money debit) {
         BigDecimal debitAmount = debit.getAmount();
+        //apply interest to account if due
+        applyInterestIfApplicable();
+        //check if balance is sufficient to pay out the debit
         BigDecimal currentBalanceAmount = this.getBalance().getAmount();
-        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {  //if debit is greater than account balance then throw
+        if (currentBalanceAmount.compareTo(debitAmount) <= 0) {
             throw new IllegalArgumentException("Insufficient Funds");
         } else {
             BigDecimal newBalanceAmount = this.getBalance().getAmount().subtract(debitAmount);
-            if (minimumBalance != null) { //if minimumBalance exists
+            //check if balance will fall below minimumBalance and apply penalty fee if necessary
+            if (minimumBalance != null) {
                 BigDecimal minimumBalanceAmount = this.getMinimumBalance().getAmount();
                 if ((currentBalanceAmount.compareTo(minimumBalanceAmount) >= 0) //if balance currently above minimumBalance but will fall below with this debit
                         && (newBalanceAmount.compareTo(minimumBalanceAmount) < 0)) {
